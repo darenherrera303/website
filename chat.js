@@ -2,7 +2,7 @@
   /* =============================================
      EIATEC · Asistente virtual (lógica completa)
      ============================================= */
-  const LOGO_MASCOT = "https://static.wixstatic.com/media/2801d6_86238b8a055743888ff8744e0423a39a~mv2.png";
+  const LOGO_MASCOT = "https://static.wixstatic.com/media/2801d6_0750b926a5df4311bd99312528aa9e0b~mv2.png";
   const LOGO_CHAT   = "https://static.wixstatic.com/media/2801d6_0750b926a5df4311bd99312528aa9e0b~mv2.png";
 
   const CFG = {
