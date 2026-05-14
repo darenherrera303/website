@@ -1,5 +1,5 @@
 /* =============================================
-   EIATEC · Widget flotante de asistente virtual
+   EIATEC · Chat widget siempre visible
    ============================================= */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -11,58 +11,11 @@
   --bd:rgba(44,105,87,.13)
 }
 
-/* ── Botón flotante (mascota) ── */
-#eiabot-mascot{
-  position:fixed;
-  bottom:24px;
-  right:24px;
-  z-index:999999;
-  width:68px;
-  height:68px;
-  border-radius:50%;
-  background:linear-gradient(135deg,var(--g),var(--lime));
-  box-shadow:0 10px 30px rgba(44,105,87,.35);
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  transition:transform .25s, box-shadow .25s;
-  pointer-events:auto;
-}
-#eiabot-mascot:hover{
-  transform:scale(1.06);
-  box-shadow:0 14px 36px rgba(44,105,87,.5);
-}
-#eiabot-mascot img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-/* ── Puntito de notificación ── */
-#eiabot-notif{
-  position:absolute;
-  top:4px;
-  right:4px;
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  background:#C1325B;
-  border:2px solid #fff;
-  display:none;
-  animation:pulse 1.5s infinite;
-}
-@keyframes pulse{
-  0%,100%{transform:scale(1)}
-  50%{transform:scale(1.3)}
-}
-
-/* ── Ventana del chat ── */
+/* ── Ventana del chat (siempre abierta) ── */
 #eiabot-chat{
   position:fixed;
-  bottom:105px;
-  right:24px;
+  bottom:20px;
+  right:20px;
   z-index:999998;
   width:340px;
   max-width:calc(100vw - 20px);
@@ -74,15 +27,6 @@
   display:flex;
   flex-direction:column;
   max-height:75vh;
-  opacity:0;
-  transform:translateY(20px) scale(.9);
-  pointer-events:none;
-  transition:opacity .28s, transform .28s;
-}
-#eiabot-chat.open{
-  opacity:1;
-  transform:none;
-  pointer-events:auto;
 }
 
 /* ── Cabecera ── */
@@ -101,6 +45,11 @@
   overflow:hidden;
   flex-shrink:0;
   border:2px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.2rem;
 }
 .eiabot-ch-av img{
   width:100%;
@@ -153,6 +102,7 @@
   display:flex;
   flex-direction:column;
   gap:10px;
+  max-height: 50vh; /* ajuste para que no se expanda demasiado */
 }
 #eiabot-msgs::-webkit-scrollbar{width:2px}
 #eiabot-msgs::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
@@ -298,11 +248,7 @@
 @media(max-width:600px){
   #eiabot-chat{
     right:10px;
-    bottom:95px;
+    bottom:10px;
     width:calc(100vw - 20px);
-  }
-  #eiabot-mascot{
-    right:14px;
-    bottom:14px;
   }
 }

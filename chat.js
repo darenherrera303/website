@@ -1,9 +1,7 @@
 (function(){
   /* =============================================
-     EIATEC · Asistente virtual (lógica completa)
+     EIATEC · Chat siempre visible (sin mascota)
      ============================================= */
-  const LOGO_MASCOT = "https://static.wixstatic.com/media/2801d6_0750b926a5df4311bd99312528aa9e0b~mv2.png";
-  const LOGO_CHAT   = "https://static.wixstatic.com/media/2801d6_0750b926a5df4311bd99312528aa9e0b~mv2.png";
 
   const CFG = {
     whatsapp: {
@@ -116,14 +114,10 @@
     }
   };
 
-  /* ── Elementos del DOM ── */
   const msgs = document.getElementById('eiabot-msgs');
   const inp  = document.getElementById('eiabot-inp');
-  let isOpen = false,
-      started = false,
-      periodicTimer = null;
+  let started = false;
 
-  /* ── Funciones auxiliares ── */
   function scroll(){ setTimeout(()=>msgs.scrollTop=msgs.scrollHeight,80); }
 
   function addBot(text){
@@ -150,7 +144,6 @@
       btn.className = 'eiabot-opt';
       btn.textContent = o.label;
       btn.onclick = () => {
-        // Deshabilitar todas las opciones de este grupo
         el.querySelectorAll('.eiabot-opt').forEach(b => { b.disabled = true; b.style.opacity = '.45'; });
         addUser(o.label);
         if (o.action) {
@@ -181,20 +174,6 @@
     setTimeout(() => addOpts(flow.opts), 200);
   }
 
-  /* ── Toggle chat ── */
-  function toggleChat(){
-    isOpen = !isOpen;
-    document.getElementById('eiabot-chat').classList.toggle('open', isOpen);
-    document.getElementById('eiabot-notif').style.display = 'none';
-    if (isOpen && !started) {
-      started = true;
-      setTimeout(() => goFlow('inicio'), 400);
-      clearPeriodic();
-    }
-    if (isOpen) setTimeout(() => inp.focus(), 350);
-  }
-
-  /* ── Procesar entrada del usuario ── */
   function handleInput(){
     const text = inp.value.trim();
     if (!text) return;
@@ -217,38 +196,21 @@
     }
   }
 
-  /* ── Mensajes automáticos periódicos ── */
-  function startPeriodic(){
-    clearPeriodic();
-    periodicTimer = setTimeout(() => {
-      if (!isOpen) {
-        addBot('¡Hola! 👋 ¿Puedo ayudarte en algo?');
-        document.getElementById('eiabot-notif').style.display = 'block';
-        startPeriodic();
-      }
-    }, 45000); // cada 45 segundos
+  // Iniciar automáticamente el flujo de bienvenida
+  if (!started) {
+    started = true;
+    setTimeout(() => goFlow('inicio'), 500);
   }
 
-  function clearPeriodic(){
-    if (periodicTimer) clearTimeout(periodicTimer);
-  }
-
-  // Primer mensaje después de 5 segundos si no se ha abierto
-  setTimeout(() => {
-    if (!isOpen && !started) {
+  // Mensajes automáticos periódicos cada 45 segundos (solo si el usuario no ha interactuado)
+  setInterval(() => {
+    if (msgs.children.length === 0) {
       addBot('¡Hola! 👋 ¿Puedo ayudarte en algo?');
-      document.getElementById('eiabot-notif').style.display = 'block';
-      startPeriodic();
     }
-  }, 5000);
+  }, 45000);
 
-  /* ── Eventos ── */
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') handleInput(); });
 
-  // Exponer funciones públicas
-  window.eiabot = {
-    toggle: toggleChat,
-    handleInput: handleInput
-  };
-
+  // Exponer handleInput global por si se usa en onclick
+  window.eiabot = { handleInput: handleInput };
 })();
