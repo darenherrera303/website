@@ -1,0 +1,44 @@
+// postulaciones.jsw
+import wixData from 'wix-data';
+import { save as mediaSave, deleteOld as mediaDelete } from 'wix-media-backend';
+import { getTempFileInfo, createTempFile } from 'wix-media-backend';
+
+export async function guardarPostulacion(datos) {
+  // Subir el CV (base64) a la Media de Wix
+  let cvUrl = null;
+
+  if (datos.cvBase64 && datos.cvNombre) {
+    // Crear archivo temporal a partir del base64
+    const mediaFile = await createTempFile({
+      fileName: datos.cvNombre,
+      mimeType: datos.cvTipo,
+      body: Buffer.from(datos.cvBase64, 'base64')
+    });
+    
+    // Guardarlo definitivamente en carpeta "Postulaciones"
+    const saved = await mediaSave({
+      file: mediaFile,
+      parentFolderId: 'Postulaciones' // o déjalo vacío para la raíz
+    });
+    cvUrl = saved.url;
+  }
+
+  // Insertar en la colección
+  const item = {
+    vacanteId:      datos.vacanteId,
+    vacanteTitulo:  datos.vacanteTitulo,
+    nombre:         datos.nombre,
+    apellido:       datos.apellido,
+    email:          datos.email,
+    telefono:       datos.telefono,
+    ciudad:         datos.ciudad,
+    experiencia:    datos.experiencia,
+    educacion:      datos.educacion,
+    mensaje:        datos.mensaje,
+    cvUrl:          cvUrl,
+    fecha:          new Date(),
+    procesado:      false
+  };
+
+  return wixData.insert('Postulaciones', item);
+}
