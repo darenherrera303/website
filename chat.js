@@ -1,16 +1,16 @@
 (function(){
   /* =============================================
-     EIATEC · Asistente virtual (minimizable)
+     Kay · Asistente Virtual de EIATEC
      ============================================= */
-  const MASCOT_URL = "https://static.wixstatic.com/media/2801d6_0750b926a5df4311bd99312528aa9e0b~mv2.png";
+  const KAY_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
 
   const CFG = {
     whatsapp: {
-      comercial:       'https://wa.me/573000000001?text=Hola+EIATEC%2C+consulta+comercial',
-      gestionhumana:   'https://wa.me/573000000002?text=Hola%2C+consulta+de+Gesti%C3%B3n+Humana',
-      hseq:            'https://wa.me/573000000003?text=Hola%2C+consulta+HSEQ',
-      gerenciatecnica: 'https://wa.me/573000000004?text=Hola%2C+consulta+t%C3%A9cnica',
-      general:         'https://wa.me/573001234567?text=Hola+EIATEC%2C+quiero+m%C3%A1s+informaci%C3%B3n',
+      comercial:       '573000000001',
+      gestionhumana:   '573000000002',
+      hseq:            '573000000003',
+      gerenciatecnica: '573000000004',
+      general:         '573001234567',
     },
     pages: {
       servicios: 'https://www.eiatec.com.co/servicios',
@@ -24,103 +24,67 @@
       gestionhumana:   'gestionhumana@eiatec.com',
       hseq:            'hseq@eiatec.com',
       gerenciatecnica: 'gerenciatecnica@eiatec.com',
-      compras:         'compras@eiatec.com'
     }
   };
 
   const FLOWS = {
     inicio: {
-      msg: '¡Hola! 👋 Soy el asistente virtual de <strong>EIATEC</strong>.<br>¿En qué puedo ayudarte hoy?',
+      msg: '¡Hola! 👋 Soy <strong>Kay</strong>, tu asistente virtual de EIATEC.<br>¿En qué puedo ayudarte hoy?',
       opts: [
-        {label:'📋 Ver nuestros servicios', next:'servicios'},
-        {label:'🗂️ Proyectos realizados',  next:'proyectos'},
-        {label:'🕐 Horarios de atención',  next:'horarios'},
-        {label:'📩 Hablar con un asesor',  next:'asesor'},
-        {label:'🌐 Ir a nuestra web',       next:'web'},
+        {label:'📋 Servicios', next:'servicios'},
+        {label:'🗂️ Proyectos', next:'proyectos'},
+        {label:'🕐 Horarios',  next:'horarios'},
+        {label:'📩 Contactar', next:'asesor'},
+        {label:'🌐 Web',      next:'web'},
       ]
     },
     servicios: {
       msg:'Ofrecemos servicios en:<br>• Estudios de Impacto Ambiental (EIA)<br>• Consulta Previa<br>• Gestión Hídrica<br>• Flora, Fauna y Biodiversidad<br>• Energía Renovable<br>• Arqueología<br>• Sostenibilidad Empresarial<br>• Logística Ambiental<br>¿Deseas más detalle?',
       opts:[
-        {label:'🔗 Ver todos los servicios', action:()=>open(CFG.pages.servicios,'_top')},
-        {label:'📩 Consultar sobre un servicio', next:'asesor'},
-        {label:'🏠 Volver al inicio', next:'inicio'},
+        {label:'🔗 Ver servicios', action:()=>open(CFG.pages.servicios,'_top')},
+        {label:'📩 Consultar', next:'asesor'},
+        {label:'🏠 Inicio', next:'inicio'},
       ]
     },
     proyectos: {
-      msg:'Hemos realizado más de 30 proyectos en toda Colombia: EIAs, consultas previas, monitoreo de fauna, compensaciones forestales, energía solar y más.',
+      msg:'Hemos realizado más de 30 proyectos en Colombia.',
       opts:[
         {label:'🔗 Ver proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
-        {label:'🏠 Volver al inicio', next:'inicio'},
+        {label:'🏠 Inicio', next:'inicio'},
       ]
     },
     horarios: {
-      msg:'🕐 <strong>Horarios de atención:</strong><br><br>📅 Lunes a Viernes<br>⏰ 8:00 am – 6:00 pm<br><br>📞 Teléfonos: (1) 704 2362 / (1) 245 0961<br>📍 Bogotá D.C. · Calle 45 C Bis #23-37<br><br>Fuera de horario puedes escribirnos por WhatsApp o correo.',
+      msg:'🕐 <strong>Horarios de atención:</strong><br><br>📅 Lunes a Viernes<br>⏰ 8:00 am – 6:00 pm<br><br>📞 Teléfonos: (1) 704 2362 / (1) 245 0961<br>📍 Bogotá D.C.',
       opts:[
-        {label:'💬 Escribir por WhatsApp', action:()=>open(CFG.whatsapp.general,'_blank')},
-        {label:'✉️ Enviar correo', action:()=>open('mailto:'+CFG.emails.comercial)},
-        {label:'🏠 Volver al inicio', next:'inicio'},
+        {label:'📩 Contactar', next:'asesor'},
+        {label:'🏠 Inicio', next:'inicio'},
       ]
     },
     asesor: {
-      msg:'Perfecto. ¿Sobre qué área es tu consulta?',
+      msg:'¿Con qué área deseas comunicarte?',
       opts:[
-        {label:'💼 Comercial / Proyectos',  next:'contacto_comercial'},
-        {label:'🛡️ HSEQ',                   next:'contacto_hseq'},
-        {label:'🔧 Gerencia Técnica',        next:'contacto_tecnica'},
-        {label:'👥 Gestión Humana',          next:'contacto_rrhh'},
-        {label:'📦 Otras áreas',             next:'contacto_otras'},
+        {label:'💼 Comercial', next:'form_comercial'},
+        {label:'🛡️ HSEQ',      next:'form_hseq'},
+        {label:'🔧 Técnica',   next:'form_tecnica'},
+        {label:'👥 RR.HH.',    next:'form_rrhh'},
+        {label:'📦 Otra',      next:'form_otra'},
       ]
     },
-    contacto_comercial: {
-      msg:'Te comunico con el área <strong>Comercial</strong>. ¿Cómo prefieres contactarnos?',
-      opts:[
-        {label:'💬 WhatsApp Comercial', action:()=>open(CFG.whatsapp.comercial,'_blank')},
-        {label:'✉️ Email: '+CFG.emails.comercial, action:()=>open('mailto:'+CFG.emails.comercial)},
-        {label:'🏠 Volver al inicio', next:'inicio'},
-      ]
-    },
-    contacto_hseq: {
-      msg:'Te comunico con el área <strong>HSEQ</strong>. ¿Cómo prefieres contactarnos?',
-      opts:[
-        {label:'💬 WhatsApp HSEQ', action:()=>open(CFG.whatsapp.hseq,'_blank')},
-        {label:'✉️ Email: '+CFG.emails.hseq, action:()=>open('mailto:'+CFG.emails.hseq)},
-        {label:'🏠 Volver al inicio', next:'inicio'},
-      ]
-    },
-    contacto_tecnica: {
-      msg:'Te comunico con <strong>Gerencia Técnica</strong>. ¿Cómo prefieres contactarnos?',
-      opts:[
-        {label:'💬 WhatsApp Técnico', action:()=>open(CFG.whatsapp.gerenciatecnica,'_blank')},
-        {label:'✉️ Email: '+CFG.emails.gerenciatecnica, action:()=>open('mailto:'+CFG.emails.gerenciatecnica)},
-        {label:'🏠 Volver al inicio', next:'inicio'},
-      ]
-    },
-    contacto_rrhh: {
-      msg:'Te comunico con <strong>Gestión Humana</strong>. ¿Cómo prefieres contactarnos?',
-      opts:[
-        {label:'💬 WhatsApp RR.HH.', action:()=>open(CFG.whatsapp.gestionhumana,'_blank')},
-        {label:'✉️ Email: '+CFG.emails.gestionhumana, action:()=>open('mailto:'+CFG.emails.gestionhumana)},
-        {label:'🏠 Volver al inicio', next:'inicio'},
-      ]
-    },
-    contacto_otras: {
-      msg:'Para otras consultas puedes contactarnos por:<br>📞 (1) 704 2362<br>✉️ comercial@eiatec.com<br><br>¿Cómo prefieres continuar?',
-      opts:[
-        {label:'💬 WhatsApp General', action:()=>open(CFG.whatsapp.general,'_blank')},
-        {label:'✉️ Enviar correo', action:()=>open('mailto:'+CFG.emails.comercial)},
-        {label:'🏠 Volver al inicio', next:'inicio'},
-      ]
-    },
+    // Los siguientes estados muestran el formulario
+    form_comercial:  { type:'form', area:'comercial' },
+    form_hseq:       { type:'form', area:'hseq' },
+    form_tecnica:    { type:'form', area:'gerenciatecnica' },
+    form_rrhh:       { type:'form', area:'gestionhumana' },
+    form_otra:       { type:'form', area:'general' },
     web: {
-      msg:'¿A qué sección de nuestra web quieres ir?',
+      msg:'¿A qué sección deseas ir?',
       opts:[
         {label:'⚙️ Servicios', action:()=>open(CFG.pages.servicios,'_top')},
         {label:'📁 Proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
         {label:'🏢 Nosotros',  action:()=>open(CFG.pages.nosotros,'_top')},
         {label:'✉️ Contacto',  action:()=>open(CFG.pages.contacto,'_top')},
         {label:'📰 Blog',      action:()=>open(CFG.pages.blog,'_top')},
-        {label:'🏠 Volver',    next:'inicio'},
+        {label:'🏠 Inicio',    next:'inicio'},
       ]
     },
   };
@@ -130,6 +94,7 @@
   const msgs   = document.getElementById('eiabot-msgs');
   const inp    = document.getElementById('eiabot-inp');
   let started  = false;
+  let currentFlow = 'inicio';
 
   function scroll(){ setTimeout(()=>msgs.scrollTop=msgs.scrollHeight,80); }
 
@@ -137,7 +102,7 @@
     const el = document.createElement('div');
     el.className = 'eiabot-bm';
     const html = text.replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
-    el.innerHTML = `<div class="eiabot-bm-av"><img src="${MASCOT_URL}" alt="EIATEC"></div><div class="eiabot-bm-bub">${html}</div>`;
+    el.innerHTML = `<div class="eiabot-bm-av"><img src="${KAY_AVATAR}" alt="Kay"></div><div class="eiabot-bm-bub">${html}</div>`;
     msgs.appendChild(el); scroll();
   }
 
@@ -158,8 +123,12 @@
       b.onclick = () => {
         el.querySelectorAll('.eiabot-opt').forEach(x => { x.disabled = true; x.style.opacity = '.45'; });
         addUser(o.label);
-        if(o.action) setTimeout(o.action, 200);
-        else if(o.next) showTyping(() => goFlow(o.next));
+        if(o.action) {
+          setTimeout(o.action, 200);
+          askAgain(); // Después de abrir enlace, preguntar si necesita más ayuda
+        } else if(o.next) {
+          showTyping(() => goFlow(o.next));
+        }
       };
       el.appendChild(b);
     });
@@ -169,7 +138,7 @@
   function showTyping(cb){
     const el = document.createElement('div');
     el.className = 'eiabot-typing';
-    el.innerHTML = `<div class="eiabot-bm-av"><img src="${MASCOT_URL}" alt="EIATEC"></div><div class="eiabot-typing-bub"><div class="eiabot-td"></div><div class="eiabot-td"></div><div class="eiabot-td"></div></div>`;
+    el.innerHTML = `<div class="eiabot-bm-av"><img src="${KAY_AVATAR}" alt="Kay"></div><div class="eiabot-typing-bub"><div class="eiabot-td"></div><div class="eiabot-td"></div><div class="eiabot-td"></div></div>`;
     msgs.appendChild(el); scroll();
     setTimeout(() => { el.remove(); cb(); }, 900);
   }
@@ -177,10 +146,80 @@
   function goFlow(key){
     const f = FLOWS[key];
     if(!f) return;
-    addBot(f.msg);
-    setTimeout(() => addOpts(f.opts), 200);
+    if(f.type === 'form'){
+      // Mostrar formulario para el área especificada
+      showForm(f.area);
+    } else {
+      addBot(f.msg);
+      setTimeout(() => addOpts(f.opts), 200);
+    }
+    currentFlow = key;
   }
 
+  /* ── FORMULARIO ── */
+  function showForm(area){
+    const formEl = document.createElement('div');
+    formEl.className = 'eiabot-form';
+    formEl.innerHTML = `
+      <input type="text" id="eiabot-fname" placeholder="Tu nombre *" required>
+      <input type="email" id="eiabot-femail" placeholder="Tu correo electrónico">
+      <input type="text" id="eiabot-fsubject" placeholder="Asunto" value="${getDefaultSubject(area)}">
+      <textarea id="eiabot-fmsg" placeholder="Mensaje adicional (opcional)"></textarea>
+      <button type="button" id="eiabot-fsend">Enviar por WhatsApp</button>
+    `;
+    msgs.appendChild(formEl);
+    scroll();
+
+    document.getElementById('eiabot-fsend').onclick = () => {
+      const name    = document.getElementById('eiabot-fname').value.trim();
+      const email   = document.getElementById('eiabot-femail').value.trim();
+      const subject = document.getElementById('eiabot-fsubject').value.trim();
+      const msg     = document.getElementById('eiabot-fmsg').value.trim();
+
+      if(!name){
+        alert('Por favor ingresa tu nombre.');
+        return;
+      }
+      const body = `Hola Kay, soy ${name}.${email ? ' Email: '+email+'.' : ''} Asunto: ${subject}.${msg ? ' Mensaje: '+msg : ''}`;
+      const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
+      open(url, '_blank');
+      // Confirmación visual y limpiar formulario
+      formEl.remove();
+      addBot('¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
+      askAgain();
+    };
+  }
+
+  function getDefaultSubject(area){
+    const subjects = {
+      comercial: 'Consulta Comercial',
+      gestionhumana: 'Consulta Gestión Humana',
+      hseq: 'Consulta HSEQ',
+      gerenciatecnica: 'Consulta Técnica',
+      general: 'Consulta General'
+    };
+    return subjects[area] || 'Consulta';
+  }
+
+  /* ── PREGUNTA FINAL ── */
+  function askAgain(){
+    setTimeout(() => {
+      addBot('¿Necesitas ayuda con algo más?');
+      setTimeout(() => {
+        addOpts([
+          {label:'✅ Sí, tengo otra consulta', next:'inicio'},
+          {label:'👋 No, gracias', action:() => {
+            addBot('¡Fue un placer ayudarte! Recuerda que puedes escribirme cuando quieras. 😊');
+            // Opcional: minimizar después de un rato
+            setTimeout(() => minimize(), 3000);
+          }}
+        ]);
+      }, 300);
+    }, 800);
+  }
+
+  /* ── ENTRADA DE TEXTO ── */
   function handleInput(){
     const v = inp.value.trim();
     if(!v) return;
@@ -189,15 +228,14 @@
     const lv = v.toLowerCase();
     if(/servicio|eia|impacto|ambiental/.test(lv)) showTyping(()=>goFlow('servicios'));
     else if(/proyecto|trabajo|referencia/.test(lv)) showTyping(()=>goFlow('proyectos'));
-    else if(/horario|hora|atencion|abre/.test(lv)) showTyping(()=>goFlow('horarios'));
-    else if(/whatsapp|asesor|hablar|contacto|correo|email/.test(lv)) showTyping(()=>goFlow('asesor'));
+    else if(/horario|hora/.test(lv)) showTyping(()=>goFlow('horarios'));
+    else if(/contacto|asesor|hablar/.test(lv)) showTyping(()=>goFlow('asesor'));
     else if(/web|pagina|sitio/.test(lv)) showTyping(()=>goFlow('web'));
     else {
       showTyping(()=>{
-        addBot('Entiendo tu consulta. Te recomiendo hablar directamente con uno de nuestros asesores. ¿Cómo prefieres contactarnos?');
+        addBot('No entendí tu solicitud. ¿Te gustaría que te comunique con un asesor?');
         setTimeout(()=>addOpts([
-          {label:'💬 WhatsApp', action:()=>open(CFG.whatsapp.general,'_blank')},
-          {label:'✉️ Correo',   action:()=>open('mailto:'+CFG.emails.comercial)},
+          {label:'📩 Contactar asesor', next:'asesor'},
           {label:'🏠 Menú principal', next:'inicio'},
         ]), 200);
       });
@@ -225,10 +263,8 @@
     setTimeout(() => goFlow('inicio'), 500);
   }
 
-  // Eventos
   inp.addEventListener('keydown', e => { if(e.key === 'Enter') handleInput(); });
 
-  // API global
   window.eiabot = {
     minimize,
     expand,
