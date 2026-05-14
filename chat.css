@@ -1,5 +1,5 @@
 /* =============================================
-   EIATEC · Chat widget minimizable
+   Kay · Asistente Virtual de EIATEC (v2)
    ============================================= */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -17,8 +17,7 @@
 /* ── PASTILLA MINIMIZADA ── */
 #eiabot-min{
   position:fixed;
-  bottom:20px;
-  right:20px;
+  bottom:20px;right:20px;
   z-index:999999;
   background:linear-gradient(135deg,var(--g),#1a4d38);
   color:#fff;
@@ -27,56 +26,38 @@
   box-shadow:0 8px 24px rgba(44,105,87,.35);
   cursor:pointer;
   display:none;
-  align-items:center;
-  gap:8px;
-  font-size:.82rem;
-  font-weight:700;
+  align-items:center;gap:8px;
+  font-size:.82rem;font-weight:700;
   font-family:'Century Gothic',CenturyGothic,sans-serif;
   transition:all .25s;
 }
-#eiabot-min:hover{
-  transform:translateY(-3px);
-  box-shadow:0 12px 28px rgba(44,105,87,.5);
-}
-#eiabot-min img{
-  width:28px;height:28px;
-  border-radius:50%;
-  object-fit:cover;
-}
+#eiabot-min:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(44,105,87,.5)}
+#eiabot-min img{width:28px;height:28px;border-radius:50%;object-fit:cover}
 
 /* ── VENTANA PRINCIPAL ── */
 #eiabot-chat{
   position:fixed;
-  bottom:20px;
-  right:20px;
+  bottom:20px;right:20px;
   z-index:999998;
-  width:340px;
+  width:360px;
   max-width:calc(100vw - 20px);
   background:var(--w);
   border-radius:22px;
   box-shadow:0 20px 60px rgba(0,0,0,.18);
   border:1px solid var(--bd);
   overflow:hidden;
-  display:flex;
-  flex-direction:column;
+  display:flex;flex-direction:column;
   max-height:75vh;
   transition:opacity .3s, transform .3s;
-  opacity:1;
-  transform:translateY(0);
+  opacity:1;transform:translateY(0);
 }
-#eiabot-chat.minimized{
-  opacity:0;
-  transform:translateY(100px);
-  pointer-events:none;
-}
+#eiabot-chat.minimized{opacity:0;transform:translateY(100px);pointer-events:none}
 
 /* ── CABECERA ── */
 .eiabot-ch{
   background:linear-gradient(135deg,var(--g),#1a4d38);
   padding:14px 16px;
-  display:flex;
-  align-items:center;
-  gap:10px;
+  display:flex;align-items:center;gap:10px;
   flex-shrink:0;
 }
 .eiabot-ch-av{
@@ -89,38 +70,18 @@
 }
 .eiabot-ch-av img{width:100%;height:100%;object-fit:cover}
 .eiabot-ch-t{flex:1}
-.eiabot-ch-t b{
-  display:block;
-  font-size:.82rem;
-  font-weight:800;
-  color:#fff;
-}
-.eiabot-ch-t span{
-  font-size:.6rem;
-  color:rgba(255,255,255,.65);
-  display:flex;align-items:center;gap:4px;
-}
-.eiabot-ch-t span::before{
-  content:'';
-  width:6px;height:6px;
-  border-radius:50%;
-  background:#62B455;
-  display:inline-block;
-}
+.eiabot-ch-t b{display:block;font-size:.82rem;font-weight:800;color:#fff}
+.eiabot-ch-t span{font-size:.6rem;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:4px}
+.eiabot-ch-t span::before{content:'';width:6px;height:6px;border-radius:50%;background:#62B455;display:inline-block}
 .eiabot-ch-min{
   background:rgba(255,255,255,.1);border:none;
   color:rgba(255,255,255,.7);
-  width:28px;height:28px;
-  border-radius:50%;
-  cursor:pointer;
-  font-size:.8rem;
+  width:28px;height:28px;border-radius:50%;
+  cursor:pointer;font-size:.8rem;
   display:flex;align-items:center;justify-content:center;
   transition:all .2s;
 }
-.eiabot-ch-min:hover{
-  background:rgba(255,255,255,.2);
-  color:#fff;
-}
+.eiabot-ch-min:hover{background:rgba(255,255,255,.2);color:#fff}
 
 /* ── CUERPO DE MENSAJES ── */
 #eiabot-msgs{
@@ -134,17 +95,10 @@
 #eiabot-msgs::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
 
 /* Burbuja del bot */
-.eiabot-bm{
-  display:flex;gap:8px;align-items:flex-end;
-  animation:msgIn .3s ease;
-}
-@keyframes msgIn{
-  from{opacity:0;transform:translateY(8px)}
-  to{opacity:1;transform:none}
-}
+.eiabot-bm{display:flex;gap:8px;align-items:flex-end;animation:msgIn .3s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .eiabot-bm-av{
-  width:28px;height:28px;
-  border-radius:50%;overflow:hidden;
+  width:28px;height:28px;border-radius:50%;overflow:hidden;
   flex-shrink:0;
   background:linear-gradient(135deg,var(--g),var(--lime));
   display:flex;align-items:center;justify-content:center;
@@ -160,10 +114,7 @@
 }
 
 /* Burbuja del usuario */
-.eiabot-um{
-  display:flex;justify-content:flex-end;
-  animation:msgIn .3s ease;
-}
+.eiabot-um{display:flex;justify-content:flex-end;animation:msgIn .3s ease}
 .eiabot-um-bub{
   background:var(--g);color:#fff;
   padding:9px 13px;
@@ -173,11 +124,7 @@
 }
 
 /* ── OPCIONES ── */
-.eiabot-opts{
-  display:flex;flex-wrap:wrap;gap:6px;
-  padding:4px 0 4px 36px;
-  animation:msgIn .35s ease;
-}
+.eiabot-opts{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 4px 36px;animation:msgIn .35s ease}
 .eiabot-opt{
   background:var(--w);
   border:1.5px solid rgba(44,105,87,.22);
@@ -188,17 +135,10 @@
   transition:all .2s;
   font-family:inherit;text-align:left;
 }
-.eiabot-opt:hover{
-  background:var(--g);color:#fff;
-  border-color:var(--g);
-  transform:translateY(-2px);
-}
+.eiabot-opt:hover{background:var(--g);color:#fff;border-color:var(--g);transform:translateY(-2px)}
 
 /* ── INDICADOR DE ESCRITURA ── */
-.eiabot-typing{
-  display:flex;gap:8px;align-items:flex-end;
-  padding:4px 0 4px 36px;
-}
+.eiabot-typing{display:flex;gap:8px;align-items:flex-end;padding:4px 0 4px 36px}
 .eiabot-typing-bub{
   background:#f0f6f2;
   border:1px solid rgba(44,105,87,.12);
@@ -206,16 +146,101 @@
   border-radius:16px 16px 16px 4px;
   display:flex;gap:4px;align-items:center;
 }
-.eiabot-td{
-  width:6px;height:6px;border-radius:50%;
-  background:var(--t3);
-  animation:td .9s infinite ease-in-out;
-}
+.eiabot-td{width:6px;height:6px;border-radius:50%;background:var(--t3);animation:td .9s infinite ease-in-out}
 .eiabot-td:nth-child(2){animation-delay:.2s}
 .eiabot-td:nth-child(3){animation-delay:.4s}
-@keyframes td{
-  0%,80%,100%{transform:scale(.8);opacity:.4}
-  40%{transform:scale(1.1);opacity:1}
+@keyframes td{0%,80%,100%{transform:scale(.8);opacity:.4}40%{transform:scale(1.1);opacity:1}}
+
+/* ── FORMULARIO MEJORADO ── */
+.eiabot-form{
+  background:#fff;
+  border:1.5px solid rgba(44,105,87,.15);
+  border-radius:18px;
+  padding:14px;
+  margin:6px 0 6px 36px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+  animation:msgIn .3s ease;
+}
+.eiabot-form label{
+  font-size:.68rem;
+  font-weight:700;
+  color:var(--t2);
+  margin-bottom:-6px;
+}
+.eiabot-form input,
+.eiabot-form textarea{
+  width:100%;
+  padding:9px 12px 9px 36px;
+  border-radius:12px;
+  border:1.5px solid var(--bd);
+  font-family:inherit;
+  font-size:.72rem;
+  background:#f9fbfa;
+  color:var(--t1);
+  outline:none;
+  transition:border .2s;
+}
+.eiabot-form input:focus,
+.eiabot-form textarea:focus{
+  border-color:var(--g);
+}
+.eiabot-form textarea{
+  min-height:60px;
+  resize:vertical;
+  padding-left:36px;
+}
+.eiabot-form .input-icon{
+  position:relative;
+}
+.eiabot-form .input-icon i{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--t3);
+  font-size:.75rem;
+}
+.eiabot-form .input-icon textarea ~ i{
+  top:14px;
+  transform:none;
+}
+.eiabot-form .btn-row{
+  display:flex;
+  gap:8px;
+  margin-top:4px;
+}
+.eiabot-form .btn-row button{
+  flex:1;
+  padding:10px 6px;
+  border-radius:14px;
+  border:none;
+  font-weight:700;
+  font-size:.7rem;
+  cursor:pointer;
+  transition:all .2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+}
+.eiabot-form .btn-wa{
+  background:#25D366;
+  color:#fff;
+}
+.eiabot-form .btn-wa:hover{
+  background:#1da851;
+  transform:scale(1.02);
+}
+.eiabot-form .btn-email{
+  background:var(--g);
+  color:#fff;
+}
+.eiabot-form .btn-email:hover{
+  background:var(--lime);
+  transform:scale(1.02);
 }
 
 /* ── INPUT ── */
@@ -243,18 +268,10 @@
   font-size:.72rem;transition:all .2s;
   flex-shrink:0;
 }
-.eiabot-ci-send:hover{
-  background:var(--lime);
-  transform:scale(1.07);
-}
+.eiabot-ci-send:hover{background:var(--lime);transform:scale(1.07)}
 
 /* ── RESPONSIVE ── */
 @media(max-width:600px){
-  #eiabot-chat{
-    right:10px;bottom:10px;
-    width:calc(100vw - 20px);
-  }
-  #eiabot-min{
-    right:10px;bottom:10px;
-  }
+  #eiabot-chat{right:10px;bottom:10px;width:calc(100vw - 20px)}
+  #eiabot-min{right:10px;bottom:10px}
 }

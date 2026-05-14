@@ -70,7 +70,6 @@
         {label:'📦 Otra',      next:'form_otra'},
       ]
     },
-    // Los siguientes estados muestran el formulario
     form_comercial:  { type:'form', area:'comercial' },
     form_hseq:       { type:'form', area:'hseq' },
     form_tecnica:    { type:'form', area:'gerenciatecnica' },
@@ -125,7 +124,7 @@
         addUser(o.label);
         if(o.action) {
           setTimeout(o.action, 200);
-          askAgain(); // Después de abrir enlace, preguntar si necesita más ayuda
+          askAgain();
         } else if(o.next) {
           showTyping(() => goFlow(o.next));
         }
@@ -147,7 +146,6 @@
     const f = FLOWS[key];
     if(!f) return;
     if(f.type === 'form'){
-      // Mostrar formulario para el área especificada
       showForm(f.area);
     } else {
       addBot(f.msg);
@@ -156,39 +154,79 @@
     currentFlow = key;
   }
 
-  /* ── FORMULARIO ── */
+  /* ── FORMULARIO MEJORADO ── */
   function showForm(area){
     const formEl = document.createElement('div');
     formEl.className = 'eiabot-form';
+    const defaultSubject = getDefaultSubject(area);
     formEl.innerHTML = `
-      <input type="text" id="eiabot-fname" placeholder="Tu nombre *" required>
-      <input type="email" id="eiabot-femail" placeholder="Tu correo electrónico">
-      <input type="text" id="eiabot-fsubject" placeholder="Asunto" value="${getDefaultSubject(area)}">
-      <textarea id="eiabot-fmsg" placeholder="Mensaje adicional (opcional)"></textarea>
-      <button type="button" id="eiabot-fsend">Enviar por WhatsApp</button>
+      <label for="eiabot-fname">Tu nombre *</label>
+      <div class="input-icon">
+        <i class="fas fa-user"></i>
+        <input type="text" id="eiabot-fname" placeholder="Ej. María Pérez" required>
+      </div>
+      <label for="eiabot-femail">Correo electrónico</label>
+      <div class="input-icon">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="eiabot-femail" placeholder="maria@correo.com">
+      </div>
+      <label for="eiabot-fsubject">Asunto</label>
+      <div class="input-icon">
+        <i class="fas fa-tag"></i>
+        <input type="text" id="eiabot-fsubject" value="${defaultSubject}">
+      </div>
+      <label for="eiabot-fmsg">Mensaje (opcional)</label>
+      <div class="input-icon">
+        <i class="fas fa-comment"></i>
+        <textarea id="eiabot-fmsg" placeholder="Cuéntanos tu consulta..."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn-wa" id="eiabot-fwa"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+        <button class="btn-email" id="eiabot-femailbtn"><i class="fas fa-envelope"></i> Correo</button>
+      </div>
     `;
     msgs.appendChild(formEl);
     scroll();
 
-    document.getElementById('eiabot-fsend').onclick = () => {
-      const name    = document.getElementById('eiabot-fname').value.trim();
-      const email   = document.getElementById('eiabot-femail').value.trim();
-      const subject = document.getElementById('eiabot-fsubject').value.trim();
-      const msg     = document.getElementById('eiabot-fmsg').value.trim();
-
-      if(!name){
+    // Lógica para WhatsApp
+    document.getElementById('eiabot-fwa').onclick = () => {
+      const data = getFormData(area);
+      if(!data.name) {
         alert('Por favor ingresa tu nombre.');
         return;
       }
-      const body = `Hola Kay, soy ${name}.${email ? ' Email: '+email+'.' : ''} Asunto: ${subject}.${msg ? ' Mensaje: '+msg : ''}`;
       const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
+      const body = `Hola Kay, soy ${data.name}.${data.email ? ' Email: '+data.email+'.' : ''} Asunto: ${data.subject}.${data.msg ? ' Mensaje: '+data.msg : ''}`;
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
       open(url, '_blank');
-      // Confirmación visual y limpiar formulario
       formEl.remove();
       addBot('¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
       askAgain();
     };
+
+    // Lógica para Correo
+    document.getElementById('eiabot-femailbtn').onclick = () => {
+      const data = getFormData(area);
+      if(!data.name) {
+        alert('Por favor ingresa tu nombre.');
+        return;
+      }
+      const to = CFG.emails[area] || CFG.emails.comercial;
+      const subject = encodeURIComponent(data.subject);
+      const body = encodeURIComponent(`Hola Kay,\n\nSoy ${data.name}.${data.email ? ' Mi correo es: '+data.email+'.' : ''}\n\n${data.msg ? 'Mensaje: '+data.msg : ''}\n\nSaludos.`);
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+      formEl.remove();
+      addBot('¡Listo! He preparado un correo para que lo envíes. Solo revisa y haz clic en enviar.');
+      askAgain();
+    };
+  }
+
+  function getFormData(area){
+    const name    = document.getElementById('eiabot-fname')?.value.trim() || '';
+    const email   = document.getElementById('eiabot-femail')?.value.trim() || '';
+    const subject = document.getElementById('eiabot-fsubject')?.value.trim() || getDefaultSubject(area);
+    const msg     = document.getElementById('eiabot-fmsg')?.value.trim() || '';
+    return { name, email, subject, msg };
   }
 
   function getDefaultSubject(area){
@@ -211,7 +249,6 @@
           {label:'✅ Sí, tengo otra consulta', next:'inicio'},
           {label:'👋 No, gracias', action:() => {
             addBot('¡Fue un placer ayudarte! Recuerda que puedes escribirme cuando quieras. 😊');
-            // Opcional: minimizar después de un rato
             setTimeout(() => minimize(), 3000);
           }}
         ]);
