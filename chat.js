@@ -29,7 +29,7 @@
 
   const FLOWS = {
     inicio: {
-      msg: '¡Hola! 👋 Soy <strong>Kay</strong>, tu asistente virtual de EIATEC.<br>¿En qué puedo ayudarte hoy?',
+      msg: '¡Hola! 👋 Soy <strong>Kai</strong>, tu asistente virtual de EIATEC.<br>¿En qué puedo ayudarte hoy?',
       opts: [
         {label:'📋 Servicios', next:'servicios'},
         {label:'🗂️ Proyectos', next:'proyectos'},
