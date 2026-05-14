@@ -1,5 +1,5 @@
 (function(){
-  /* ── Partículas de fondo ── */
+  /* ── Light particle bg ── */
   const cv=document.getElementById('bgc'),cx=cv.getContext('2d');
   let pts=[],W,H;
   const PAL=[[44,105,87],[98,180,85],[234,173,38],[27,129,195]];
@@ -39,7 +39,7 @@
   rsz();init();requestAnimationFrame(frame);
   window.addEventListener('resize',()=>{rsz();init()});
 
-  /* ── Selección de área ── */
+  /* ── Area pills ── */
   let selEmail='',selName='';
   document.querySelectorAll('.apill').forEach(b=>{
     b.addEventListener('click',()=>{
@@ -52,11 +52,11 @@
     });
   });
 
-  /* ── Contador de caracteres ── */
+  /* ── Char counter ── */
   const ta=document.getElementById('fmensaje');
   ta.addEventListener('input',()=>document.getElementById('fcc').textContent=ta.value.length);
 
-  /* ── Envío del formulario ── */
+  /* ── Submit ── */
   document.getElementById('sbtn').addEventListener('click',()=>{
     const nombre=document.getElementById('fnombre').value.trim();
     const email=document.getElementById('femail').value.trim();
@@ -111,7 +111,6 @@
       .forEach(el=>el.style.display='');
   });
 
-  /* ── Comunicación con Wix ── */
   function sendReady(){window.parent.postMessage('READY','*')}
   window.addEventListener('load',()=>{sendReady();setTimeout(sendReady,600)});
 })();
