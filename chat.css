@@ -1,241 +1,308 @@
+/* =============================================
+   EIATEC · Widget flotante de asistente virtual
+   ============================================= */
 *{box-sizing:border-box;margin:0;padding:0}
-
 :root{
---g:#2C6957;
---lime:#62B455;
---w:#fff;
---t1:#1a2e24;
---t3:#8aaa98;
---bd:rgba(44,105,87,.13)
+  --g:#2C6957;
+  --lime:#62B455;
+  --w:#fff;
+  --t1:#1a2e24;
+  --t3:#8aaa98;
+  --bd:rgba(44,105,87,.13)
 }
 
-html,body{
-background:transparent!important;
-overflow:visible!important;
-width:auto;
-height:auto;
-font-family:'Century Gothic',sans-serif;
+/* ── Botón flotante (mascota) ── */
+#eiabot-mascot{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  z-index:999999;
+  width:68px;
+  height:68px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--g),var(--lime));
+  box-shadow:0 10px 30px rgba(44,105,87,.35);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  transition:transform .25s, box-shadow .25s;
+  pointer-events:auto;
+}
+#eiabot-mascot:hover{
+  transform:scale(1.06);
+  box-shadow:0 14px 36px rgba(44,105,87,.5);
+}
+#eiabot-mascot img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
-/* ELIMINA BLOQUEO GLOBAL */
-body{
-pointer-events:none;
+/* ── Puntito de notificación ── */
+#eiabot-notif{
+  position:absolute;
+  top:4px;
+  right:4px;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:#C1325B;
+  border:2px solid #fff;
+  display:none;
+  animation:pulse 1.5s infinite;
+}
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.3)}
 }
 
-/* SOLO EL CHAT INTERACTÚA */
-#mascot,
-#chat{
-pointer-events:auto;
+/* ── Ventana del chat ── */
+#eiabot-chat{
+  position:fixed;
+  bottom:105px;
+  right:24px;
+  z-index:999998;
+  width:340px;
+  max-width:calc(100vw - 20px);
+  background:var(--w);
+  border-radius:22px;
+  box-shadow:0 20px 60px rgba(0,0,0,.18);
+  border:1px solid var(--bd);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  max-height:75vh;
+  opacity:0;
+  transform:translateY(20px) scale(.9);
+  pointer-events:none;
+  transition:opacity .28s, transform .28s;
+}
+#eiabot-chat.open{
+  opacity:1;
+  transform:none;
+  pointer-events:auto;
 }
 
-#bgc{
-display:none;
+/* ── Cabecera ── */
+.eiabot-ch{
+  background:linear-gradient(135deg,var(--g),#1a4d38);
+  padding:14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+}
+.eiabot-ch-av{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  overflow:hidden;
+  flex-shrink:0;
+  border:2px solid rgba(255,255,255,.3);
+}
+.eiabot-ch-av img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.eiabot-ch-t{flex:1}
+.eiabot-ch-t b{
+  display:block;
+  font-size:.82rem;
+  color:#fff;
+}
+.eiabot-ch-t span{
+  font-size:.63rem;
+  color:rgba(255,255,255,.7);
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.eiabot-ch-t span::before{
+  content:'';
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#62B455;
+  display:inline-block;
+}
+.eiabot-ch-x{
+  width:28px;
+  height:28px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.1);
+  color:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background .2s;
+}
+.eiabot-ch-x:hover{
+  background:rgba(255,255,255,.2);
 }
 
-/* BOTÓN */
-#mascot{
-position:fixed;
-bottom:24px;
-right:24px;
-z-index:999999;
-width:68px;
-height:68px;
-border-radius:50%;
-background:linear-gradient(135deg,var(--g),var(--lime));
-box-shadow:0 10px 30px rgba(44,105,87,.35);
-cursor:pointer;
-display:flex;
-align-items:center;
-justify-content:center;
-overflow:hidden;
-transition:.25s;
+/* ── Cuerpo de mensajes ── */
+#eiabot-msgs{
+  flex:1;
+  overflow-y:auto;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+#eiabot-msgs::-webkit-scrollbar{width:2px}
+#eiabot-msgs::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+
+/* Burbuja del bot */
+.eiabot-bm{
+  display:flex;
+  gap:8px;
+  align-items:flex-end;
+  animation:msgIn .3s ease;
+}
+@keyframes msgIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:none}
+}
+.eiabot-bm-bub{
+  background:#f2f7f4;
+  border:1px solid rgba(44,105,87,.12);
+  padding:10px 13px;
+  border-radius:16px 16px 16px 4px;
+  font-size:.74rem;
+  color:var(--t1);
+  line-height:1.5;
+  max-width:82%;
 }
 
-#mascot:hover{
-transform:scale(1.06);
+/* Burbuja del usuario */
+.eiabot-um{
+  display:flex;
+  justify-content:flex-end;
+  animation:msgIn .3s ease;
+}
+.eiabot-um-bub{
+  background:var(--g);
+  color:#fff;
+  padding:10px 13px;
+  border-radius:16px 16px 4px 16px;
+  font-size:.74rem;
+  line-height:1.5;
+  max-width:80%;
 }
 
-#mascot img{
-width:100%;
-height:100%;
-object-fit:cover;
+/* ── Opciones ── */
+.eiabot-opts{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:0 14px 14px;
+}
+.eiabot-opt{
+  border:1.5px solid rgba(44,105,87,.22);
+  background:#eef5f1;
+  color:var(--g);
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:.67rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  font-family:inherit;
+}
+.eiabot-opt:hover{
+  background:var(--g);
+  color:#fff;
+  border-color:var(--g);
+  transform:translateY(-1px);
 }
 
-/* CHAT */
-#chat{
-position:fixed;
-bottom:105px;
-right:24px;
-z-index:999998;
-width:340px;
-max-width:calc(100vw - 20px);
-background:var(--w);
-border-radius:22px;
-box-shadow:0 20px 60px rgba(0,0,0,.18);
-border:1px solid var(--bd);
-overflow:hidden;
-display:flex;
-flex-direction:column;
-max-height:75vh;
-
-opacity:0;
-transform:translateY(20px) scale(.9);
-pointer-events:none;
-transition:.28s;
+/* ── Indicador de escritura ── */
+.eiabot-typing{
+  display:flex;
+  gap:8px;
+  align-items:flex-end;
+  padding:0 14px 14px;
+}
+.eiabot-typing-bub{
+  background:#f2f7f4;
+  border:1px solid rgba(44,105,87,.12);
+  padding:10px 14px;
+  border-radius:16px 16px 16px 4px;
+  display:flex;
+  gap:4px;
+  align-items:center;
+}
+.eiabot-td{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--t3);
+  animation:td .9s infinite ease-in-out;
+}
+.eiabot-td:nth-child(2){animation-delay:.2s}
+.eiabot-td:nth-child(3){animation-delay:.4s}
+@keyframes td{
+  0%,80%,100%{transform:scale(.8);opacity:.4}
+  40%{transform:scale(1.1);opacity:1}
 }
 
-#chat.open{
-opacity:1;
-transform:none;
-pointer-events:auto;
+/* ── Input ── */
+.eiabot-ci{
+  display:flex;
+  gap:8px;
+  padding:12px;
+  border-top:1px solid var(--bd);
+  flex-shrink:0;
+}
+.eiabot-ci input{
+  flex:1;
+  border:1.5px solid var(--bd);
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:.74rem;
+  font-family:inherit;
+  color:var(--t1);
+  outline:none;
+  background:#f8fbf9;
+  transition:border-color .2s;
+}
+.eiabot-ci input:focus{
+  border-color:var(--g);
+}
+.eiabot-ci-send{
+  width:36px;
+  height:36px;
+  border:none;
+  border-radius:50%;
+  background:var(--g);
+  color:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.72rem;
+  transition:background .2s, transform .2s;
+  flex-shrink:0;
+}
+.eiabot-ci-send:hover{
+  background:var(--lime);
+  transform:scale(1.07);
 }
 
-/* HEADER */
-.ch{
-background:linear-gradient(135deg,var(--g),#1a4d38);
-padding:14px;
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.ch-av{
-width:38px;
-height:38px;
-border-radius:50%;
-overflow:hidden;
-flex-shrink:0;
-}
-
-.ch-av img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-.ch-t{
-flex:1;
-}
-
-.ch-t b{
-display:block;
-font-size:.82rem;
-color:#fff;
-}
-
-.ch-t span{
-font-size:.63rem;
-color:rgba(255,255,255,.7);
-}
-
-.ch-x{
-width:28px;
-height:28px;
-border:none;
-border-radius:50%;
-background:rgba(255,255,255,.1);
-color:#fff;
-cursor:pointer;
-}
-
-/* MENSAJES */
-#msgs{
-padding:14px;
-overflow-y:auto;
-display:flex;
-flex-direction:column;
-gap:10px;
-flex:1;
-}
-
-.bm,.um{
-display:flex;
-}
-
-.um{
-justify-content:flex-end;
-}
-
-.bm-bub{
-background:#f2f7f4;
-padding:10px 13px;
-border-radius:16px 16px 16px 4px;
-font-size:.74rem;
-line-height:1.5;
-max-width:80%;
-}
-
-.um-bub{
-background:var(--g);
-color:#fff;
-padding:10px 13px;
-border-radius:16px 16px 4px 16px;
-font-size:.74rem;
-max-width:80%;
-}
-
-/* OPCIONES */
-.opts{
-display:flex;
-flex-wrap:wrap;
-gap:6px;
-padding:0 14px 14px;
-}
-
-.opt{
-border:none;
-background:#eef5f1;
-padding:7px 12px;
-border-radius:999px;
-font-size:.67rem;
-cursor:pointer;
-transition:.2s;
-}
-
-.opt:hover{
-background:var(--g);
-color:#fff;
-}
-
-/* INPUT */
-.ci{
-display:flex;
-gap:8px;
-padding:12px;
-border-top:1px solid var(--bd);
-}
-
-.ci input{
-flex:1;
-border:1px solid var(--bd);
-border-radius:999px;
-padding:10px 14px;
-font-size:.74rem;
-outline:none;
-}
-
-.ci-send{
-width:36px;
-height:36px;
-border:none;
-border-radius:50%;
-background:var(--g);
-color:#fff;
-cursor:pointer;
-}
-
-/* MOBILE */
+/* ── Responsive ── */
 @media(max-width:600px){
-
-#chat{
-right:10px;
-bottom:95px;
-width:calc(100vw - 20px);
-}
-
-#mascot{
-right:14px;
-bottom:14px;
-}
-
+  #eiabot-chat{
+    right:10px;
+    bottom:95px;
+    width:calc(100vw - 20px);
+  }
+  #eiabot-mascot{
+    right:14px;
+    bottom:14px;
+  }
 }
