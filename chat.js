@@ -1,5 +1,5 @@
 /* =============================================
-   Kay · Widget JS — EIATEC
+   Kay · Widget JS — EIATEC (estable para Wix)
    Sube este archivo a tu GitHub como: kay.js
    El HTML lo carga con <script src="...kay.js" defer>
 ============================================= */
@@ -133,34 +133,57 @@
   };
 
   /* ═══════════════════════════════════════════
-     MOTOR DEL CHAT
+     MOTOR DEL CHAT (inicialización diferida)
   ═══════════════════════════════════════════ */
   let isOpen  = false;
   let started = false;
+  let chatEl, dotEl, box, inp;
 
-  const chatEl = document.getElementById('kayChat');
-  const dotEl  = document.getElementById('kayDot');
-  const box    = document.getElementById('kMsgs');
-  const inp    = document.getElementById('kInp');
+  function initWhenReady() {
+    chatEl = document.getElementById('kayChat');
+    dotEl  = document.getElementById('kayDot');
+    box    = document.getElementById('kMsgs');
+    inp    = document.getElementById('kInp');
 
-  /* ── Abrir / cerrar ── */
-  window.toggleKay = function () {
-    isOpen = !isOpen;
-    chatEl.classList.toggle('open', isOpen);
-    if (dotEl) dotEl.style.display = 'none';
-
-    if (isOpen && !started) {
-      started = true;
-      setTimeout(() => goFlow('inicio'), 380);
+    if (chatEl && dotEl && box && inp) {
+      // Todos los elementos existen, iniciar el widget
+      setupChat();
+    } else {
+      // Reintentar en 50ms
+      setTimeout(initWhenReady, 50);
     }
-    if (isOpen) setTimeout(() => inp && inp.focus(), 340);
-  };
+  }
 
-  // Muestra el badge de notificación a los 2.8 s
-  setTimeout(() => { if (dotEl) dotEl.style.display = 'flex'; }, 2800);
+  function setupChat() {
+    /* ── Abrir / cerrar ── */
+    window.toggleKay = function () {
+      isOpen = !isOpen;
+      chatEl.classList.toggle('open', isOpen);
+      if (dotEl) dotEl.style.display = 'none';
+
+      if (isOpen && !started) {
+        started = true;
+        setTimeout(() => goFlow('inicio'), 380);
+      }
+      if (isOpen) setTimeout(() => inp && inp.focus(), 340);
+    };
+
+    // Badge de notificación
+    setTimeout(() => { if (dotEl) dotEl.style.display = 'flex'; }, 2800);
+
+    // Evento de envío por tecla Enter
+    if (inp) {
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') handleKayInput(); });
+    }
+
+    // Señal de ready para Wix
+    function sendReady() { window.parent && window.parent.postMessage('READY', '*'); }
+    sendReady();
+    setTimeout(sendReady, 600);
+  }
 
   /* ── Scroll al fondo ── */
-  function scroll() { setTimeout(() => { box.scrollTop = box.scrollHeight; }, 80); }
+  function scroll() { setTimeout(() => { if (box) box.scrollTop = box.scrollHeight; }, 80); }
 
   /* ── Burbuja del bot ── */
   function addBot(html) {
@@ -380,13 +403,12 @@
       });
   };
 
-  // Enviar con Enter
-  if (inp) {
-    inp.addEventListener('keydown', e => { if (e.key === 'Enter') handleKayInput(); });
+  /* ── Inicialización segura ── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initWhenReady);
+  } else {
+    // El DOM ya está listo
+    initWhenReady();
   }
-
-  // Señal para Wix
-  function sendReady() { window.parent && window.parent.postMessage('READY', '*'); }
-  window.addEventListener('load', () => { sendReady(); setTimeout(sendReady, 600); });
 
 })();
