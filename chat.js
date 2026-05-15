@@ -6,7 +6,7 @@
 
   const CFG = {
     whatsapp: {
-      comercial:       '573000000001',
+      comercial:       '573000000001',   // ← Cambiar por el real
       gestionhumana:   '573000000002',
       hseq:            '573000000003',
       gerenciatecnica: '573000000004',
@@ -41,7 +41,7 @@
     servicios: {
       msg:'Ofrecemos servicios en:<br>• Estudios de Impacto Ambiental (EIA)<br>• Consulta Previa<br>• Gestión Hídrica<br>• Flora, Fauna y Biodiversidad<br>• Energía Renovable<br>• Arqueología<br>• Sostenibilidad Empresarial<br>• Logística Ambiental<br>¿Deseas más detalle?',
       opts:[
-        {label:'🔗 Ver servicios', action:()=>open(CFG.pages.servicios,'_top')},
+        {label:'🔗 Ver servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
         {label:'📩 Consultar', next:'asesor'},
         {label:'↩️ Volver', next:'inicio'},
       ]
@@ -49,7 +49,7 @@
     proyectos: {
       msg:'Hemos realizado más de 30 proyectos en Colombia.',
       opts:[
-        {label:'🔗 Ver proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
+        {label:'🔗 Ver proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
         {label:'↩️ Volver', next:'inicio'},
       ]
     },
@@ -79,11 +79,11 @@
     web: {
       msg:'¿A qué sección deseas ir?',
       opts:[
-        {label:'⚙️ Servicios', action:()=>open(CFG.pages.servicios,'_top')},
-        {label:'📁 Proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
-        {label:'🏢 Nosotros',  action:()=>open(CFG.pages.nosotros,'_top')},
-        {label:'✉️ Contacto',  action:()=>open(CFG.pages.contacto,'_top')},
-        {label:'📰 Blog',      action:()=>open(CFG.pages.blog,'_top')},
+        {label:'⚙️ Servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
+        {label:'📁 Proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
+        {label:'🏢 Nosotros',  action:()=>window.open(CFG.pages.nosotros,'_top')},
+        {label:'✉️ Contacto',  action:()=>window.open(CFG.pages.contacto,'_top')},
+        {label:'📰 Blog',      action:()=>window.open(CFG.pages.blog,'_top')},
         {label:'↩️ Volver',    next:'inicio'},
       ]
     },
@@ -95,8 +95,6 @@
   const inp    = document.getElementById('eiabot-inp');
   let started  = false;
   let currentFlow = 'inicio';
-
-  // Pila para navegación “volver”
   let flowStack = [];
 
   function pushFlow(flowKey){
@@ -156,10 +154,7 @@
   function goFlow(key){
     const f = FLOWS[key];
     if(!f) return;
-
-    // Si es un formulario, no apilamos
     if(f.type !== 'form') pushFlow(key);
-    
     if(f.type === 'form'){
       showForm(f.area);
     } else {
@@ -167,11 +162,6 @@
       setTimeout(() => addOpts(f.opts), 200);
     }
     currentFlow = key;
-  }
-
-  function goBack(){
-    const prev = popFlow();
-    goFlow(prev);
   }
 
   /* ── FORMULARIO MEJORADO ── */
@@ -217,7 +207,7 @@
       const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
       const body = `Hola Kay, soy ${data.name}.${data.email ? ' Email: '+data.email+'.' : ''} Asunto: ${data.subject}.${data.msg ? ' Mensaje: '+data.msg : ''}`;
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
-      open(url, '_blank');
+      window.open(url, '_blank');
       formEl.remove();
       addBot('✅ ¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
       askAgain();
@@ -282,7 +272,6 @@
     addUser(v);
     const lv = v.toLowerCase();
 
-    // Saludos / despedidas
     if(/^(hola|buenos días|buenas tardes|buenas noches|hey|hi|saludos)/i.test(lv)){
       showTyping(()=>{
         addBot('¡Hola! 😊 ¿En qué puedo ayudarte hoy?');
@@ -296,7 +285,6 @@
       return;
     }
 
-    // Navegación por palabras clave
     if(/servicio|eia|impacto|ambiental|estudio/i.test(lv)){
       showTyping(()=>goFlow('servicios'));
     } else if(/proyecto|trabajo|referencia|portafolio/i.test(lv)){
@@ -331,11 +319,12 @@
     minBtn.style.display = 'none';
     if(!started){
       started = true;
-      setTimeout(() => goFlow('inicio'), 500);
+      setTimeout(() => goFlow('inicio'), 600);
     }
     inp.focus();
   }
 
+  // Arrancar automáticamente
   if(!started){
     started = true;
     setTimeout(() => goFlow('inicio'), 600);
@@ -343,9 +332,5 @@
 
   inp.addEventListener('keydown', e => { if(e.key === 'Enter') handleInput(); });
 
-  window.eiabot = {
-    minimize,
-    expand,
-    handleInput
-  };
+  window.eiabot = { minimize, expand, handleInput };
 })();
