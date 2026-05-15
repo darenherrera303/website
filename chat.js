@@ -1,5 +1,6 @@
 /* ═══════════════════════════════════════
-   Kay · Asistente EIATEC (v3 – Mejora natural)
+   Kay · Asistente EIATEC
+   (widget flotante para Wix iframe)
 ═══════════════════════════════════════ */
 const CFG={
   wa:{
@@ -233,26 +234,22 @@ function askAgain(){
   },900);
 }
 
-/* ── Entrada de texto natural (mejorada) ── */
 function handleKayInput(){
   const v=inp.value.trim();if(!v)return;
   inp.value='';addUser(v);
   const l=v.toLowerCase();
 
-  // Saludos
   if(/^(hola|buenos días|buenas tardes|hey|saludos|buenas)/i.test(l)){
     addBot('¡Hola! 😊 ¿En qué puedo ayudarte?');
     goFlow('inicio');
     return;
   }
-  // Despedidas / agradecimientos
   if(/^(adiós|chao|bye|gracias|muchas gracias|nos vemos)/i.test(l)){
     addBot('¡Gracias a ti! 🤗 Estoy aquí cuando me necesites.');
     setTimeout(()=>toggleKay(),2500);
     return;
   }
 
-  // Derivación por palabras clave
   if(/servicio|eia|impacto|ambiental|hídric|forestal|fauna|flora/.test(l)) showTyping(()=>goFlow('servicios'));
   else if(/proyecto|trabajo|referencia|portafolio/.test(l)) showTyping(()=>goFlow('proyectos'));
   else if(/horario|hora|atencion|abre|cierra|oficina/.test(l)) showTyping(()=>goFlow('horarios'));
@@ -265,6 +262,5 @@ function handleKayInput(){
 }
 inp.addEventListener('keydown',e=>{if(e.key==='Enter')handleKayInput()});
 
-/* CMS bridge */
 function sendReady(){window.parent.postMessage('READY','*')}
 window.addEventListener('load',()=>{sendReady();setTimeout(sendReady,600)});
