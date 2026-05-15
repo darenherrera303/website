@@ -1,4 +1,4 @@
-(function(){
+js (function(){
   /* =============================================
      Kay · Asistente Virtual de EIATEC
      ============================================= */
@@ -13,11 +13,11 @@
       general:         '573001234567',
     },
     pages: {
-      servicios: 'https://www.eiatec.com/servicios',
-      proyectos: 'https://www.eiatec.com/proyectos',
-      nosotros:  'https://www.eiatec.com/nosotros',
-      contacto:  'https://www.eiatec.com/contacto',
-      blog:      'https://www.eiatec.com/blog',
+      servicios: 'https://www.eiatec.com.co/servicios',
+      proyectos: 'https://www.eiatec.com.co/proyectos',
+      nosotros:  'https://www.eiatec.com.co/nosotros',
+      contacto:  'https://www.eiatec.com.co/contacto',
+      blog:      'https://www.eiatec.com.co/blog',
     },
     emails: {
       comercial:       'comercial@eiatec.com',
@@ -41,7 +41,7 @@
     servicios: {
       msg:'Ofrecemos servicios en:<br>• Estudios de Impacto Ambiental (EIA)<br>• Consulta Previa<br>• Gestión Hídrica<br>• Flora, Fauna y Biodiversidad<br>• Energía Renovable<br>• Arqueología<br>• Sostenibilidad Empresarial<br>• Logística Ambiental<br>¿Deseas más detalle?',
       opts:[
-        {label:'🔗 Ver servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
+        {label:'🔗 Ver servicios', action:()=>open(CFG.pages.servicios,'_top')},
         {label:'📩 Consultar', next:'asesor'},
         {label:'🏠 Inicio', next:'inicio'},
       ]
@@ -49,7 +49,7 @@
     proyectos: {
       msg:'Hemos realizado más de 30 proyectos en Colombia.',
       opts:[
-        {label:'🔗 Ver proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
+        {label:'🔗 Ver proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
         {label:'🏠 Inicio', next:'inicio'},
       ]
     },
@@ -78,11 +78,11 @@
     web: {
       msg:'¿A qué sección deseas ir?',
       opts:[
-        {label:'⚙️ Servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
-        {label:'📁 Proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
-        {label:'🏢 Nosotros',  action:()=>window.open(CFG.pages.nosotros,'_top')},
-        {label:'✉️ Contacto',  action:()=>window.open(CFG.pages.contacto,'_top')},
-        {label:'📰 Blog',      action:()=>window.open(CFG.pages.blog,'_top')},
+        {label:'⚙️ Servicios', action:()=>open(CFG.pages.servicios,'_top')},
+        {label:'📁 Proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
+        {label:'🏢 Nosotros',  action:()=>open(CFG.pages.nosotros,'_top')},
+        {label:'✉️ Contacto',  action:()=>open(CFG.pages.contacto,'_top')},
+        {label:'📰 Blog',      action:()=>open(CFG.pages.blog,'_top')},
         {label:'🏠 Inicio',    next:'inicio'},
       ]
     },
@@ -198,7 +198,7 @@
       const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
       const body = `Hola Kay, soy ${data.name}.${data.email ? ' Email: '+data.email+'.' : ''} Asunto: ${data.subject}.${data.msg ? ' Mensaje: '+data.msg : ''}`;
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
-      window.open(url, '_blank');
+      open(url, '_blank');
       formEl.remove();
       addBot('¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
       askAgain();
@@ -256,25 +256,13 @@
     }, 800);
   }
 
-  /* ── ENTRADA DE TEXTO (mejora: reconoce saludos y despedidas) ── */
+  /* ── ENTRADA DE TEXTO ── */
   function handleInput(){
     const v = inp.value.trim();
     if(!v) return;
     inp.value = '';
     addUser(v);
     const lv = v.toLowerCase();
-
-    if(/^(hola|buenos días|buenas tardes|hey|saludos|buenas)/i.test(lv)) {
-      addBot('¡Hola! 😊 ¿En qué puedo ayudarte?');
-      goFlow('inicio');
-      return;
-    }
-    if(/^(adiós|chao|bye|gracias|muchas gracias|nos vemos)/i.test(lv)) {
-      addBot('¡Gracias a ti! 🤗 Estoy aquí cuando me necesites.');
-      setTimeout(() => minimize(), 2500);
-      return;
-    }
-
     if(/servicio|eia|impacto|ambiental/.test(lv)) showTyping(()=>goFlow('servicios'));
     else if(/proyecto|trabajo|referencia/.test(lv)) showTyping(()=>goFlow('proyectos'));
     else if(/horario|hora/.test(lv)) showTyping(()=>goFlow('horarios'));
