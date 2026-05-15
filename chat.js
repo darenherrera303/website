@@ -1,6 +1,6 @@
 (function(){
   /* =============================================
-     Kay · Asistente Virtual de EIATEC
+     Kay · Asistente Virtual de EIATEC (v3 – Playful & Natural)
      ============================================= */
   const KAY_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
 
@@ -29,7 +29,7 @@
 
   const FLOWS = {
     inicio: {
-      msg: '¡Hola! 👋 Soy <strong>Kai</strong>, tu asistente virtual de eiatec.<br>¿En qué puedo ayudarte hoy?',
+      msg: '¡Hola! 👋 Soy <strong>Kay</strong>, tu asistente virtual de eiatec.<br>¿En qué puedo ayudarte hoy?',
       opts: [
         {label:'📋 Servicios', next:'servicios'},
         {label:'🗂️ Proyectos', next:'proyectos'},
@@ -43,21 +43,21 @@
       opts:[
         {label:'🔗 Ver servicios', action:()=>open(CFG.pages.servicios,'_top')},
         {label:'📩 Consultar', next:'asesor'},
-        {label:'🏠 Inicio', next:'inicio'},
+        {label:'↩️ Volver', next:'inicio'},
       ]
     },
     proyectos: {
       msg:'Hemos realizado más de 30 proyectos en Colombia.',
       opts:[
         {label:'🔗 Ver proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
-        {label:'🏠 Inicio', next:'inicio'},
+        {label:'↩️ Volver', next:'inicio'},
       ]
     },
     horarios: {
       msg:'🕐 <strong>Horarios de atención:</strong><br><br>📅 Lunes a Viernes<br>⏰ 8:00 am – 6:00 pm<br><br>📞 Teléfonos: (1) 704 2362 / (1) 245 0961<br>📍 Bogotá D.C.',
       opts:[
         {label:'📩 Contactar', next:'asesor'},
-        {label:'🏠 Inicio', next:'inicio'},
+        {label:'↩️ Volver', next:'inicio'},
       ]
     },
     asesor: {
@@ -68,6 +68,7 @@
         {label:'🔧 Técnica',   next:'form_tecnica'},
         {label:'👥 RR.HH.',    next:'form_rrhh'},
         {label:'📦 Otra',      next:'form_otra'},
+        {label:'↩️ Volver',    next:'inicio'},
       ]
     },
     form_comercial:  { type:'form', area:'comercial' },
@@ -83,7 +84,7 @@
         {label:'🏢 Nosotros',  action:()=>open(CFG.pages.nosotros,'_top')},
         {label:'✉️ Contacto',  action:()=>open(CFG.pages.contacto,'_top')},
         {label:'📰 Blog',      action:()=>open(CFG.pages.blog,'_top')},
-        {label:'🏠 Inicio',    next:'inicio'},
+        {label:'↩️ Volver',    next:'inicio'},
       ]
     },
   };
@@ -94,6 +95,16 @@
   const inp    = document.getElementById('eiabot-inp');
   let started  = false;
   let currentFlow = 'inicio';
+
+  // Pila para navegación “volver”
+  let flowStack = [];
+
+  function pushFlow(flowKey){
+    if(flowKey !== currentFlow) flowStack.push(currentFlow);
+  }
+  function popFlow(){
+    return flowStack.pop() || 'inicio';
+  }
 
   function scroll(){ setTimeout(()=>msgs.scrollTop=msgs.scrollHeight,80); }
 
@@ -145,6 +156,10 @@
   function goFlow(key){
     const f = FLOWS[key];
     if(!f) return;
+
+    // Si es un formulario, no apilamos
+    if(f.type !== 'form') pushFlow(key);
+    
     if(f.type === 'form'){
       showForm(f.area);
     } else {
@@ -152,6 +167,11 @@
       setTimeout(() => addOpts(f.opts), 200);
     }
     currentFlow = key;
+  }
+
+  function goBack(){
+    const prev = popFlow();
+    goFlow(prev);
   }
 
   /* ── FORMULARIO MEJORADO ── */
@@ -188,7 +208,6 @@
     msgs.appendChild(formEl);
     scroll();
 
-    // Lógica para WhatsApp
     document.getElementById('eiabot-fwa').onclick = () => {
       const data = getFormData(area);
       if(!data.name) {
@@ -200,11 +219,10 @@
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
       open(url, '_blank');
       formEl.remove();
-      addBot('¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
+      addBot('✅ ¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
       askAgain();
     };
 
-    // Lógica para Correo
     document.getElementById('eiabot-femailbtn').onclick = () => {
       const data = getFormData(area);
       if(!data.name) {
@@ -216,7 +234,7 @@
       const body = encodeURIComponent(`Hola Kay,\n\nSoy ${data.name}.${data.email ? ' Mi correo es: '+data.email+'.' : ''}\n\n${data.msg ? 'Mensaje: '+data.msg : ''}\n\nSaludos.`);
       window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
       formEl.remove();
-      addBot('¡Listo! He preparado un correo para que lo envíes. Solo revisa y haz clic en enviar.');
+      addBot('📧 ¡Listo! He preparado un correo para que lo envíes. Solo revisa y haz clic en enviar.');
       askAgain();
     };
   }
@@ -256,24 +274,48 @@
     }, 800);
   }
 
-  /* ── ENTRADA DE TEXTO ── */
+  /* ── ENTRADA DE TEXTO NATURAL ── */
   function handleInput(){
     const v = inp.value.trim();
     if(!v) return;
     inp.value = '';
     addUser(v);
     const lv = v.toLowerCase();
-    if(/servicio|eia|impacto|ambiental/.test(lv)) showTyping(()=>goFlow('servicios'));
-    else if(/proyecto|trabajo|referencia/.test(lv)) showTyping(()=>goFlow('proyectos'));
-    else if(/horario|hora/.test(lv)) showTyping(()=>goFlow('horarios'));
-    else if(/contacto|asesor|hablar/.test(lv)) showTyping(()=>goFlow('asesor'));
-    else if(/web|pagina|sitio/.test(lv)) showTyping(()=>goFlow('web'));
-    else {
+
+    // Saludos / despedidas
+    if(/^(hola|buenos días|buenas tardes|buenas noches|hey|hi|saludos)/i.test(lv)){
       showTyping(()=>{
-        addBot('No entendí tu solicitud. ¿Te gustaría que te comunique con un asesor?');
+        addBot('¡Hola! 😊 ¿En qué puedo ayudarte hoy?');
+        goFlow('inicio');
+      });
+      return;
+    }
+    if(/^(adiós|chao|bye|gracias|muchas gracias|nos vemos)/i.test(lv)){
+      addBot('¡Gracias a ti! 🤗 Estoy aquí cuando me necesites.');
+      setTimeout(() => minimize(), 2500);
+      return;
+    }
+
+    // Navegación por palabras clave
+    if(/servicio|eia|impacto|ambiental|estudio/i.test(lv)){
+      showTyping(()=>goFlow('servicios'));
+    } else if(/proyecto|trabajo|referencia|portafolio/i.test(lv)){
+      showTyping(()=>goFlow('proyectos'));
+    } else if(/horario|hora|atención/i.test(lv)){
+      showTyping(()=>goFlow('horarios'));
+    } else if(/contacto|asesor|hablar|comunicar|ayuda/i.test(lv)){
+      showTyping(()=>goFlow('asesor'));
+    } else if(/web|página|sitio|link/i.test(lv)){
+      showTyping(()=>goFlow('web'));
+    } else if(/volver|atrás|regresar|inicio|menú/i.test(lv)){
+      showTyping(()=>goFlow('inicio'));
+    } else {
+      showTyping(()=>{
+        addBot('🤔 No estoy seguro de haber entendido. ¿Te refieres a algo de esto?');
         setTimeout(()=>addOpts([
-          {label:'📩 Contactar asesor', next:'asesor'},
-          {label:'🏠 Menú principal', next:'inicio'},
+          {label:'📋 Servicios', next:'servicios'},
+          {label:'📩 Contactar', next:'asesor'},
+          {label:'↩️ Volver al menú', next:'inicio'},
         ]), 200);
       });
     }
@@ -289,15 +331,14 @@
     minBtn.style.display = 'none';
     if(!started){
       started = true;
-      setTimeout(() => goFlow('inicio'), 400);
+      setTimeout(() => goFlow('inicio'), 500);
     }
     inp.focus();
   }
 
-  // Iniciar abierto
   if(!started){
     started = true;
-    setTimeout(() => goFlow('inicio'), 500);
+    setTimeout(() => goFlow('inicio'), 600);
   }
 
   inp.addEventListener('keydown', e => { if(e.key === 'Enter') handleInput(); });

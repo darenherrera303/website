@@ -1,5 +1,5 @@
 /* =============================================
-   Kay · Asistente Virtual de EIATEC (v2)
+   Kay · Asistente Virtual de EIATEC (v3 – Playful)
    ============================================= */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -11,7 +11,11 @@
   --t1:#1a2e24;
   --t2:#4a6a5a;
   --t3:#8aaa98;
-  --bd:rgba(44,105,87,.13)
+  --bd:rgba(44,105,87,.13);
+  --card-shadow:0 20px 50px rgba(0,0,0,.15);
+  --bubble-bot:#eaf7ec;
+  --bubble-user:#2C6957;
+  --radius:22px;
 }
 
 /* ── PASTILLA MINIMIZADA ── */
@@ -23,255 +27,341 @@
   color:#fff;
   padding:10px 18px;
   border-radius:30px;
-  box-shadow:0 8px 24px rgba(44,105,87,.35);
+  box-shadow:0 12px 28px rgba(44,105,87,.45);
   cursor:pointer;
   display:none;
   align-items:center;gap:8px;
   font-size:.82rem;font-weight:700;
-  font-family:'Century Gothic',CenturyGothic,sans-serif;
+  font-family:'Poppins',system-ui,sans-serif;
   transition:all .25s;
+  border:2px solid rgba(255,255,255,.2);
 }
-#eiabot-min:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(44,105,87,.5)}
-#eiabot-min img{width:28px;height:28px;border-radius:50%;object-fit:cover}
+#eiabot-min:hover{
+  transform:translateY(-4px);
+  box-shadow:0 18px 36px rgba(44,105,87,.55);
+}
+#eiabot-min img{width:28px;height:28px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px rgba(255,255,255,.3);}
 
 /* ── VENTANA PRINCIPAL ── */
 #eiabot-chat{
   position:fixed;
   bottom:20px;right:20px;
   z-index:999998;
-  width:360px;
+  width:380px;
   max-width:calc(100vw - 20px);
   background:var(--w);
-  border-radius:22px;
-  box-shadow:0 20px 60px rgba(0,0,0,.18);
-  border:1px solid var(--bd);
+  border-radius:var(--radius);
+  box-shadow:var(--card-shadow), 0 0 0 1px rgba(44,105,87,.08);
   overflow:hidden;
   display:flex;flex-direction:column;
   max-height:75vh;
   transition:opacity .3s, transform .3s;
   opacity:1;transform:translateY(0);
+  border:1px solid rgba(255,255,255,.4);
+  backdrop-filter:blur(8px);
 }
-#eiabot-chat.minimized{opacity:0;transform:translateY(100px);pointer-events:none}
+#eiabot-chat.minimized{
+  opacity:0;
+  transform:translateY(120px);
+  pointer-events:none;
+}
 
 /* ── CABECERA ── */
 .eiabot-ch{
-  background:linear-gradient(135deg,var(--g),#1a4d38);
-  padding:14px 16px;
+  background:linear-gradient(135deg,#1f4d3a,var(--g));
+  padding:16px 18px;
   display:flex;align-items:center;gap:10px;
   flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+.eiabot-ch::after{
+  content:'';
+  position:absolute;
+  top:-40px;right:-40px;
+  width:80px;height:80px;
+  background:rgba(255,255,255,.08);
+  border-radius:50%;
+  animation: floatBlob 8s infinite ease-in-out;
+}
+@keyframes floatBlob{
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(10px,10px) scale(1.2);}
 }
 .eiabot-ch-av{
-  width:38px;height:38px;
+  width:40px;height:40px;
   border-radius:50%;overflow:hidden;
-  border:2px solid rgba(255,255,255,.3);
+  border:2px solid rgba(255,255,255,.35);
   flex-shrink:0;
   background:rgba(255,255,255,.15);
   display:flex;align-items:center;justify-content:center;
+  animation: pulseAvatar 2s infinite;
+}
+@keyframes pulseAvatar{
+  0%{box-shadow:0 0 0 0 rgba(255,255,255,.4);}
+  70%{box-shadow:0 0 0 8px rgba(255,255,255,0);}
+  100%{box-shadow:0 0 0 0 rgba(255,255,255,0);}
 }
 .eiabot-ch-av img{width:100%;height:100%;object-fit:cover}
-.eiabot-ch-t{flex:1}
-.eiabot-ch-t b{display:block;font-size:.82rem;font-weight:800;color:#fff}
-.eiabot-ch-t span{font-size:.6rem;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:4px}
-.eiabot-ch-t span::before{content:'';width:6px;height:6px;border-radius:50%;background:#62B455;display:inline-block}
+.eiabot-ch-t{flex:1;position:relative;z-index:1}
+.eiabot-ch-t b{
+  display:block;font-size:.85rem;font-weight:700;
+  color:#fff;letter-spacing:.02em;
+}
+.eiabot-ch-t span{
+  font-size:.65rem;color:rgba(255,255,255,.7);
+  display:flex;align-items:center;gap:5px;
+}
+.eiabot-ch-t span::before{
+  content:'';
+  width:8px;height:8px;
+  border-radius:50%;
+  background:#62B455;
+  display:inline-block;
+  box-shadow:0 0 8px #62B455;
+  animation: onlinePulse 1.5s infinite;
+}
+@keyframes onlinePulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.6;transform:scale(1.2)}
+}
 .eiabot-ch-min{
-  background:rgba(255,255,255,.1);border:none;
+  background:rgba(255,255,255,.12);
+  border:none;
   color:rgba(255,255,255,.7);
-  width:28px;height:28px;border-radius:50%;
+  width:30px;height:30px;border-radius:50%;
   cursor:pointer;font-size:.8rem;
   display:flex;align-items:center;justify-content:center;
   transition:all .2s;
+  backdrop-filter:blur(2px);
 }
-.eiabot-ch-min:hover{background:rgba(255,255,255,.2);color:#fff}
+.eiabot-ch-min:hover{background:rgba(255,255,255,.25);color:#fff;transform:rotate(90deg);}
 
 /* ── CUERPO DE MENSAJES ── */
 #eiabot-msgs{
   flex:1;overflow-y:auto;
-  padding:14px 13px;
-  display:flex;flex-direction:column;gap:9px;
+  padding:16px 14px;
+  display:flex;flex-direction:column;gap:12px;
   scroll-behavior:smooth;
-  max-height:50vh;
+  max-height:55vh;
+  background:linear-gradient(to bottom,#ffffff,#f9fbfa);
 }
-#eiabot-msgs::-webkit-scrollbar{width:2px}
-#eiabot-msgs::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+#eiabot-msgs::-webkit-scrollbar{width:4px}
+#eiabot-msgs::-webkit-scrollbar-thumb{background:var(--bd);border-radius:4px}
+#eiabot-msgs::-webkit-scrollbar-track{background:transparent}
 
 /* Burbuja del bot */
-.eiabot-bm{display:flex;gap:8px;align-items:flex-end;animation:msgIn .3s ease}
-@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.eiabot-bm{
+  display:flex;gap:10px;align-items:flex-end;
+  animation: msgPop .25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes msgPop{
+  from{opacity:0;transform:translateY(10px) scale(0.95);}
+  to{opacity:1;transform:none;}
+}
 .eiabot-bm-av{
-  width:28px;height:28px;border-radius:50%;overflow:hidden;
+  width:30px;height:30px;border-radius:50%;overflow:hidden;
   flex-shrink:0;
   background:linear-gradient(135deg,var(--g),var(--lime));
   display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(44,105,87,.2);
 }
 .eiabot-bm-av img{width:100%;height:100%;object-fit:cover}
 .eiabot-bm-bub{
-  background:#f0f6f2;
-  border:1px solid rgba(44,105,87,.12);
-  padding:9px 13px;
-  border-radius:16px 16px 16px 4px;
-  font-size:.73rem;color:var(--t1);line-height:1.6;
-  max-width:82%;
+  background:var(--bubble-bot);
+  border:1px solid rgba(44,105,87,.08);
+  padding:10px 14px;
+  border-radius:18px 18px 18px 5px;
+  font-size:.75rem;color:var(--t1);line-height:1.6;
+  max-width:80%;
+  box-shadow:0 3px 8px rgba(0,0,0,.04);
+  position:relative;
+}
+.eiabot-bm-bub::after{
+  content:'';
+  position:absolute;
+  left:-6px;bottom:8px;
+  width:0;height:0;
+  border:6px solid transparent;
+  border-right-color:var(--bubble-bot);
+  border-left:0;
 }
 
 /* Burbuja del usuario */
-.eiabot-um{display:flex;justify-content:flex-end;animation:msgIn .3s ease}
+.eiabot-um{
+  display:flex;justify-content:flex-end;
+  animation: msgPop .25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 .eiabot-um-bub{
-  background:var(--g);color:#fff;
-  padding:9px 13px;
-  border-radius:16px 16px 4px 16px;
-  font-size:.73rem;line-height:1.6;
+  background:var(--bubble-user);
+  color:#fff;
+  padding:10px 14px;
+  border-radius:18px 18px 5px 18px;
+  font-size:.75rem;line-height:1.6;
   max-width:78%;
+  box-shadow:0 4px 10px rgba(44,105,87,.25);
 }
 
 /* ── OPCIONES ── */
-.eiabot-opts{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 4px 36px;animation:msgIn .35s ease}
+.eiabot-opts{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:4px 0 4px 40px;
+  animation: msgPop .35s ease;
+}
 .eiabot-opt{
   background:var(--w);
-  border:1.5px solid rgba(44,105,87,.22);
-  color:var(--g);padding:6px 13px;
-  border-radius:20px;
-  font-size:.66rem;font-weight:700;
+  border:1.5px solid rgba(44,105,87,.2);
+  color:var(--g);padding:7px 15px;
+  border-radius:24px;
+  font-size:.68rem;font-weight:700;
   cursor:pointer;
-  transition:all .2s;
+  transition:all .25s;
   font-family:inherit;text-align:left;
+  box-shadow:0 2px 5px rgba(0,0,0,.02);
+  display:flex;align-items:center;gap:5px;
 }
-.eiabot-opt:hover{background:var(--g);color:#fff;border-color:var(--g);transform:translateY(-2px)}
+.eiabot-opt:hover{
+  background:var(--g);
+  color:#fff;
+  border-color:var(--g);
+  transform:translateY(-3px);
+  box-shadow:0 8px 16px rgba(44,105,87,.25);
+}
+.eiabot-opt:active{transform:translateY(0);}
 
 /* ── INDICADOR DE ESCRITURA ── */
-.eiabot-typing{display:flex;gap:8px;align-items:flex-end;padding:4px 0 4px 36px}
-.eiabot-typing-bub{
-  background:#f0f6f2;
-  border:1px solid rgba(44,105,87,.12);
-  padding:10px 14px;
-  border-radius:16px 16px 16px 4px;
-  display:flex;gap:4px;align-items:center;
+.eiabot-typing{
+  display:flex;gap:10px;align-items:flex-end;
+  padding:4px 0 4px 40px;
+  animation: msgPop .25s ease;
 }
-.eiabot-td{width:6px;height:6px;border-radius:50%;background:var(--t3);animation:td .9s infinite ease-in-out}
+.eiabot-typing-bub{
+  background:var(--bubble-bot);
+  border:1px solid rgba(44,105,87,.08);
+  padding:12px 16px;
+  border-radius:18px 18px 18px 5px;
+  display:flex;gap:5px;align-items:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.03);
+}
+.eiabot-td{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--g);
+  animation: td 1s infinite ease-in-out;
+}
 .eiabot-td:nth-child(2){animation-delay:.2s}
 .eiabot-td:nth-child(3){animation-delay:.4s}
-@keyframes td{0%,80%,100%{transform:scale(.8);opacity:.4}40%{transform:scale(1.1);opacity:1}}
+@keyframes td{
+  0%,80%,100%{transform:scale(.6);opacity:.3}
+  40%{transform:scale(1.3);opacity:1}
+}
 
 /* ── FORMULARIO MEJORADO ── */
 .eiabot-form{
   background:#fff;
-  border:1.5px solid rgba(44,105,87,.15);
-  border-radius:18px;
-  padding:14px;
-  margin:6px 0 6px 36px;
+  border:1.5px solid rgba(44,105,87,.1);
+  border-radius:20px;
+  padding:16px;
+  margin:6px 0 6px 40px;
   display:flex;
   flex-direction:column;
-  gap:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,.04);
-  animation:msgIn .3s ease;
+  gap:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,.06);
+  animation: msgPop .3s ease;
 }
 .eiabot-form label{
-  font-size:.68rem;
-  font-weight:700;
+  font-size:.7rem;font-weight:700;
   color:var(--t2);
-  margin-bottom:-6px;
+  margin-bottom:-8px;
+}
+.eiabot-form .input-icon{position:relative;}
+.eiabot-form .input-icon i{
+  position:absolute;
+  left:12px;top:50%;
+  transform:translateY(-50%);
+  color:var(--t3);
+  font-size:.8rem;
+  transition:color .2s;
 }
 .eiabot-form input,
 .eiabot-form textarea{
   width:100%;
-  padding:9px 12px 9px 36px;
-  border-radius:12px;
+  padding:10px 12px 10px 36px;
+  border-radius:14px;
   border:1.5px solid var(--bd);
   font-family:inherit;
   font-size:.72rem;
   background:#f9fbfa;
   color:var(--t1);
   outline:none;
-  transition:border .2s;
+  transition:border .2s, box-shadow .2s;
 }
 .eiabot-form input:focus,
 .eiabot-form textarea:focus{
   border-color:var(--g);
+  box-shadow:0 0 0 3px rgba(44,105,87,.1);
 }
-.eiabot-form textarea{
-  min-height:60px;
-  resize:vertical;
-  padding-left:36px;
-}
-.eiabot-form .input-icon{
-  position:relative;
-}
-.eiabot-form .input-icon i{
-  position:absolute;
-  left:12px;
-  top:50%;
-  transform:translateY(-50%);
-  color:var(--t3);
-  font-size:.75rem;
-}
-.eiabot-form .input-icon textarea ~ i{
-  top:14px;
-  transform:none;
-}
-.eiabot-form .btn-row{
-  display:flex;
-  gap:8px;
-  margin-top:4px;
-}
+.eiabot-form textarea{min-height:65px;resize:vertical;}
+.eiabot-form .btn-row{display:flex;gap:8px;margin-top:6px;}
 .eiabot-form .btn-row button{
-  flex:1;
-  padding:10px 6px;
-  border-radius:14px;
-  border:none;
-  font-weight:700;
-  font-size:.7rem;
-  cursor:pointer;
-  transition:all .2s;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:5px;
+  flex:1;padding:11px 6px;
+  border-radius:16px;border:none;
+  font-weight:700;font-size:.7rem;
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
 }
-.eiabot-form .btn-wa{
-  background:#25D366;
-  color:#fff;
-}
-.eiabot-form .btn-wa:hover{
-  background:#1da851;
-  transform:scale(1.02);
-}
-.eiabot-form .btn-email{
-  background:var(--g);
-  color:#fff;
-}
-.eiabot-form .btn-email:hover{
-  background:var(--lime);
-  transform:scale(1.02);
-}
+.eiabot-form .btn-wa{background:#25D366;color:#fff;}
+.eiabot-form .btn-wa:hover{background:#1da851;transform:scale(1.03);}
+.eiabot-form .btn-email{background:var(--g);color:#fff;}
+.eiabot-form .btn-email:hover{background:var(--lime);transform:scale(1.03);}
 
 /* ── INPUT ── */
 .eiabot-ci{
   border-top:1px solid var(--bd);
-  padding:10px 12px;
-  display:flex;gap:7px;
+  padding:10px 14px;
+  display:flex;gap:8px;
   flex-shrink:0;
+  background:#fff;
 }
 .eiabot-ci input{
-  flex:1;padding:8px 13px;
-  border-radius:20px;
+  flex:1;padding:10px 16px;
+  border-radius:24px;
   border:1.5px solid var(--bd);
   background:#f8fbf9;
-  font-family:inherit;font-size:.73rem;color:var(--t1);
-  outline:none;transition:border-color .2s;
+  font-family:inherit;font-size:.75rem;color:var(--t1);
+  outline:none;transition:border-color .2s, box-shadow .2s;
 }
-.eiabot-ci input:focus{border-color:var(--g)}
+.eiabot-ci input:focus{
+  border-color:var(--g);
+  box-shadow:0 0 0 3px rgba(44,105,87,.08);
+}
 .eiabot-ci-send{
-  width:34px;height:34px;
+  width:38px;height:38px;
   border-radius:50%;border:none;
   background:var(--g);color:#fff;
   cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  font-size:.72rem;transition:all .2s;
+  font-size:.8rem;transition:all .2s;
   flex-shrink:0;
+  position:relative;
 }
-.eiabot-ci-send:hover{background:var(--lime);transform:scale(1.07)}
+.eiabot-ci-send:hover{
+  background:var(--lime);
+  transform:scale(1.08);
+}
+.eiabot-ci-send:active::after{
+  content:'✨';
+  position:absolute;
+  font-size:1rem;
+  top:-10px;right:-5px;
+  animation: spark .6s ease-out;
+}
+@keyframes spark{
+  0%{opacity:1;transform:translateY(0) scale(1);}
+  100%{opacity:0;transform:translateY(-20px) scale(0.5);}
+}
 
 /* ── RESPONSIVE ── */
 @media(max-width:600px){
-  #eiabot-chat{right:10px;bottom:10px;width:calc(100vw - 20px)}
-  #eiabot-min{right:10px;bottom:10px}
+  #eiabot-chat{right:5px;bottom:5px;width:calc(100vw - 10px);}
+  #eiabot-min{right:5px;bottom:5px;}
 }
