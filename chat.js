@@ -1,7 +1,6 @@
 /* =============================================
-   Kay · Widget JS — EIATEC (estable para Wix)
-   Sube este archivo a tu GitHub como: kay.js
-   El HTML lo carga con <script src="...kay.js" defer>
+   Kay · Widget JS — EIATEC (compatible Wix)
+   Debe cargarse con <script src="kay.js" defer>
 ============================================= */
 (function () {
 
@@ -35,15 +34,14 @@
       compras:    'compras@eiatec.com',
       general:    'comercial@eiatec.com',
     },
-    // URL de la mascota Kai
+    // Avatar de Kai
     avatar: 'https://static.wixstatic.com/media/2801d6_51ce4f450a744caeb76eeee572a36286~mv2.png',
   };
 
   /* ═══════════════════════════════════════════
-     FLUJOS DE CONVERSACIÓN
+     FLUJOS DE CONVERSACIÓN (sin cambios)
   ═══════════════════════════════════════════ */
   const FLOWS = {
-
     inicio: {
       msg: `¡Hola! 👋 Soy <strong>Kai</strong>, el asistente virtual de <strong>EIATEC</strong>.<br>
             Estoy aquí para ayudarte. ¿Por dónde empezamos?`,
@@ -55,7 +53,6 @@
         { e: '🌐', l: 'Ir al sitio web',      n: 'web'       },
       ],
     },
-
     servicios: {
       msg: `En <strong>EIATEC</strong> ofrecemos soluciones ambientales integrales:<br><br>
             🌿 Estudios de Impacto Ambiental (EIA)<br>
@@ -73,7 +70,6 @@
         { e: '🏠', l: 'Volver al inicio',        n: 'inicio' },
       ],
     },
-
     proyectos: {
       msg: `Hemos realizado <strong>más de 30 proyectos</strong> exitosos en Colombia 🇨🇴<br><br>
             EIAs, consultas previas, monitoreo de fauna, energía solar,
@@ -84,7 +80,6 @@
         { e: '🏠', l: 'Inicio',        n: 'inicio' },
       ],
     },
-
     horarios: {
       msg: `🕐 <strong>Horarios de atención:</strong><br><br>
             📅 Lunes a Viernes<br>
@@ -98,7 +93,6 @@
         { e: '🏠', l: 'Inicio',   n: 'inicio' },
       ],
     },
-
     asesor: {
       msg: `¡Perfecto! Dime, ¿sobre qué área necesitas ayuda?`,
       opts: [
@@ -110,14 +104,11 @@
         { e: '🏠', l: 'Volver',               n: 'inicio'      },
       ],
     },
-
-    // Flujos de formulario por área
     f_comercial: { type: 'form', label: 'Comercial',        wa: 'comercial', mail: 'comercial' },
     f_hseq:      { type: 'form', label: 'HSEQ',             wa: 'hseq',      mail: 'hseq'      },
     f_tecnica:   { type: 'form', label: 'Gerencia Técnica', wa: 'tecnica',   mail: 'tecnica'   },
     f_humana:    { type: 'form', label: 'Gestión Humana',   wa: 'humana',    mail: 'humana'    },
     f_juridica:  { type: 'form', label: 'Gestión Jurídica', wa: 'general',   mail: 'juridica'  },
-
     web: {
       msg: `¿A qué sección quieres ir? 🌐`,
       opts: [
@@ -129,16 +120,17 @@
         { e: '🏠', l: 'Volver',   n: 'inicio' },
       ],
     },
-
   };
 
   /* ═══════════════════════════════════════════
-     MOTOR DEL CHAT (inicialización diferida)
+     MOTOR DEL CHAT
+     (IDs y clases reales: #kayChat, .bm, .um, .kopts…)
   ═══════════════════════════════════════════ */
   let isOpen  = false;
   let started = false;
   let chatEl, dotEl, box, inp;
 
+  // Intenta encontrar los elementos del DOM, reintenta si no existen
   function initWhenReady() {
     chatEl = document.getElementById('kayChat');
     dotEl  = document.getElementById('kayDot');
@@ -146,16 +138,14 @@
     inp    = document.getElementById('kInp');
 
     if (chatEl && dotEl && box && inp) {
-      // Todos los elementos existen, iniciar el widget
       setupChat();
     } else {
-      // Reintentar en 50ms
       setTimeout(initWhenReady, 50);
     }
   }
 
   function setupChat() {
-    /* ── Abrir / cerrar ── */
+    // Abrir / cerrar
     window.toggleKay = function () {
       isOpen = !isOpen;
       chatEl.classList.toggle('open', isOpen);
@@ -171,18 +161,18 @@
     // Badge de notificación
     setTimeout(() => { if (dotEl) dotEl.style.display = 'flex'; }, 2800);
 
-    // Evento de envío por tecla Enter
+    // Escuchar Enter en el input
     if (inp) {
       inp.addEventListener('keydown', e => { if (e.key === 'Enter') handleKayInput(); });
     }
 
-    // Señal de ready para Wix
+    // Señal de listo para Wix
     function sendReady() { window.parent && window.parent.postMessage('READY', '*'); }
     sendReady();
     setTimeout(sendReady, 600);
   }
 
-  /* ── Scroll al fondo ── */
+  /* ── Scroll al último mensaje ── */
   function scroll() { setTimeout(() => { if (box) box.scrollTop = box.scrollHeight; }, 80); }
 
   /* ── Burbuja del bot ── */
@@ -214,7 +204,6 @@
       b.className = 'kopt';
       b.innerHTML = `${o.e || ''} ${o.l}`;
       b.onclick = () => {
-        // Deshabilitar chips del grupo
         w.querySelectorAll('.kopt').forEach(x => { x.disabled = true; x.style.opacity = '.42'; });
         addUser(`${o.e || ''} ${o.l}`);
         if (o.a) { setTimeout(o.a, 180); setTimeout(askAgain, 700); }
@@ -258,7 +247,7 @@
     setTimeout(() => addOpts(f.opts), 220);
   }
 
-  /* ── Formulario de contacto ── */
+  /* ── Formulario de contacto (clases .kform, .kfi, etc.) ── */
   function showForm(f) {
     const subj = `Consulta ${f.label} · EIATEC`;
 
@@ -361,7 +350,7 @@
     };
   }
 
-  /* ── Pregunta de cierre ── */
+  /* ── Pregunta final ── */
   function askAgain() {
     setTimeout(() => {
       addSys('─────────────────');
@@ -403,11 +392,10 @@
       });
   };
 
-  /* ── Inicialización segura ── */
+  // Arranque seguro
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initWhenReady);
   } else {
-    // El DOM ya está listo
     initWhenReady();
   }
 
