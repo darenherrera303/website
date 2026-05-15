@@ -1,513 +1,383 @@
-/* =============================================
-   Kay · Widget CSS — EIATEC
-   Sube este archivo a tu GitHub como: kay.css
-============================================= */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ═══════════════════════════════════════
+   EIATEC · KAI · Estilos del Chat
+   ═══════════════════════════════════════ */
+
+* {
+  box-sizing: border-box;
+}
 
 :root {
-  --g:    #2C6957;
-  --lime: #62B455;
-  --gold: #EAAD26;
-  --t1:   #1a2e24;
-  --t2:   #4a6a5a;
-  --t3:   #8aaa98;
-  --bd:   rgba(44,105,87,.14);
-  --w:    #ffffff;
-  --bg:   #f2f7f4;
+  --kai-green: #2C6957;
+  --kai-lime: #62B455;
+  --kai-gold: #EAAD26;
+  --kai-bg: #f0f5f2;
+  --kai-white: #fff;
+  --kai-t1: #1a2e24;
+  --kai-t2: #4a6a5a;
+  --kai-t3: #8aaa98;
+  --kai-border: rgba(44, 105, 87, 0.13);
 }
 
-/* ── MASCOTA (botón flotante) ─────────── */
-#kayBtn {
+/* ── Botón flotante de Kai ── */
+#kai-mascot {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 999999;
-  width: 68px;
-  height: 68px;
+  bottom: 28px;
+  right: 28px;
+  z-index: 99990;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  border: none;
-  padding: 0;
-  background: none;
+  background: linear-gradient(135deg, var(--kai-green), var(--kai-lime));
+  box-shadow: 0 8px 28px rgba(44, 105, 87, 0.45);
   cursor: pointer;
-  filter: drop-shadow(0 8px 22px rgba(44,105,87,.45));
-}
-
-#kayBtn img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  animation: kayFloat 3s ease-in-out infinite;
-  border: 3px solid rgba(255,255,255,.5);
-}
-
-@keyframes kayFloat {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-8px); }
-}
-
-#kayBtn::after {
-  content: '';
-  position: absolute;
-  inset: -5px;
-  border-radius: 50%;
-  border: 2.5px solid rgba(98,180,85,.5);
-  animation: kayRing 2.4s ease-out infinite;
-  pointer-events: none;
-}
-
-@keyframes kayRing {
-  0%   { transform: scale(1);   opacity: .7; }
-  100% { transform: scale(1.45); opacity: 0; }
-}
-
-/* Badge de notificación */
-#kayDot {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #C1325B;
-  border: 2.5px solid #fff;
-  font-size: .56rem;
-  font-weight: 800;
-  color: #fff;
-  font-family: 'Century Gothic', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: dotPop .4s cubic-bezier(.34,1.56,.64,1) both;
-}
-
-@keyframes dotPop {
-  from { transform: scale(0); }
-  to   { transform: scale(1); }
-}
-
-/* ── VENTANA DEL CHAT ─────────────────── */
-#kayChat {
-  position: fixed;
-  bottom: 104px;
-  right: 24px;
-  z-index: 999998;
-  width: min(370px, calc(100vw - 20px));
-  max-height: 82vh;
-  background: var(--w);
-  border-radius: 24px;
-  border: 1px solid var(--bd);
-  box-shadow: 0 24px 70px rgba(44,105,87,.18), 0 4px 20px rgba(0,0,0,.07);
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  animation: kaiBounce 2.8s ease-in-out infinite;
+  transition: transform 0.2s, box-shadow 0.2s;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  font-family: 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
+}
 
-  /* estado inicial: cerrado */
+#kai-mascot:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 36px rgba(44, 105, 87, 0.6);
+}
+
+#kai-mascot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+@keyframes kaiBounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* ── Punto de notificación ── */
+#kai-notif {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #C1325B;
+  border: 2px solid var(--kai-bg);
+  display: none;
+  animation: kaiPulse 1.5s infinite;
+}
+
+@keyframes kaiPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.3); }
+}
+
+/* ── Ventana del chat ── */
+#kai-chat {
+  position: fixed;
+  bottom: 110px;
+  right: 28px;
+  z-index: 99989;
+  width: min(380px, calc(100vw - 32px));
+  background: var(--kai-white);
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(44, 105, 87, 0.18), 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--kai-border);
+  overflow: hidden;
+  transform: scale(0.88) translateY(20px);
   opacity: 0;
   pointer-events: none;
-  transform: scale(.88) translateY(22px);
-  transform-origin: bottom right;
-  transition: opacity .36s cubic-bezier(.22,1,.36,1),
-              transform .36s cubic-bezier(.22,1,.36,1);
+  transition: all 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  font-family: 'Century Gothic', CenturyGothic, 'Segoe UI', sans-serif;
 }
 
-#kayChat.open {
+#kai-chat.open {
+  transform: scale(1) translateY(0);
   opacity: 1;
   pointer-events: auto;
-  transform: scale(1) translateY(0);
 }
 
-/* ── CABECERA ─────────────────────────── */
-.kh {
-  background: linear-gradient(135deg, #1a4d38 0%, var(--g) 55%, #3a8a5c 100%);
+/* ── Header del chat ── */
+.kai-ch-header {
+  background: linear-gradient(135deg, var(--kai-green), #1a4d38);
   padding: 14px 16px;
   display: flex;
   align-items: center;
   gap: 11px;
   flex-shrink: 0;
-  position: relative;
-  overflow: hidden;
 }
 
-/* Patrón de puntos sobre el header */
-.kh::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
-  background-size: 20px 20px;
-  pointer-events: none;
-}
-
-.kh-av {
-  width: 44px;
-  height: 44px;
+.kai-ch-avatar {
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2.5px solid rgba(255,255,255,.38);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(0,0,0,.25);
-  position: relative;
-  z-index: 1;
-}
-.kh-av img { width: 100%; height: 100%; object-fit: cover; }
-
-/* Punto verde de "en línea" */
-.kh-av::after {
-  content: '';
-  position: absolute;
-  bottom: 1px;
-  right: 1px;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: #62B455;
-  border: 2px solid #1a4d38;
-}
-
-.kh-t { flex: 1; z-index: 1; }
-.kh-t b {
-  display: block;
-  font-size: .84rem;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: .2px;
-}
-.kh-t span {
-  font-size: .59rem;
-  color: rgba(255,255,255,.65);
-  margin-top: 2px;
+  background: rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  font-size: 1.1rem;
 }
-.kh-t span::before {
+
+.kai-ch-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kai-ch-info {
+  flex: 1;
+}
+
+.kai-ch-info strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.kai-ch-info span {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.65);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kai-ch-info span::before {
   content: '';
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #62B455;
+  background: var(--kai-lime);
   display: inline-block;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: .4; }
 }
 
-.kh-x {
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.18);
-  color: rgba(255,255,255,.75);
-  width: 30px;
-  height: 30px;
+.kai-ch-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: .76rem;
+  font-size: 0.72rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background .2s, color .2s, transform .22s;
-  z-index: 1;
-  flex-shrink: 0;
+  transition: all 0.2s;
 }
-.kh-x:hover { background: rgba(255,255,255,.24); color: #fff; transform: rotate(90deg); }
 
-/* ── ÁREA DE MENSAJES ─────────────────── */
-#kMsgs {
+.kai-ch-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* ── Área de mensajes ── */
+.kai-msgs {
   flex: 1;
   overflow-y: auto;
   padding: 14px 13px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
   scroll-behavior: smooth;
+  background: #fafdfb;
 }
-#kMsgs::-webkit-scrollbar { width: 2px; }
-#kMsgs::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 2px; }
 
-/* Animación de entrada */
-@keyframes mIn {
-  from { opacity: 0; transform: translateY(10px); }
+.kai-msgs::-webkit-scrollbar {
+  width: 2px;
+}
+
+.kai-msgs::-webkit-scrollbar-thumb {
+  background: var(--kai-border);
+  border-radius: 2px;
+}
+
+/* ── Burbuja del bot (Kai) ── */
+.kai-msg-bot {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  animation: kaiMsgIn 0.3s ease;
+}
+
+@keyframes kaiMsgIn {
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: none; }
 }
 
-/* Burbuja del bot */
-.bm { display: flex; gap: 8px; align-items: flex-end; animation: mIn .3s ease; }
-
-.bm-av {
-  width: 30px;
-  height: 30px;
+.kai-bot-av {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  border: 1.5px solid rgba(44,105,87,.25);
-}
-.bm-av img { width: 100%; height: 100%; object-fit: cover; }
-
-.bm-bub {
-  background: linear-gradient(135deg, #f2f8f4, #eaf4ed);
-  border: 1px solid rgba(44,105,87,.12);
-  padding: 10px 14px;
-  border-radius: 18px 18px 18px 4px;
-  font-size: .74rem;
-  color: var(--t1);
-  line-height: 1.68;
-  max-width: 84%;
-  box-shadow: 0 2px 8px rgba(44,105,87,.06);
+  background: linear-gradient(135deg, var(--kai-green), var(--kai-lime));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
 }
 
-/* Burbuja del usuario */
-.um { display: flex; justify-content: flex-end; animation: mIn .3s ease; }
+.kai-bot-av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-.um-bub {
-  background: linear-gradient(135deg, var(--g), #3a8a5c);
+.kai-bot-bub {
+  background: #f0f6f2;
+  border: 1px solid rgba(44, 105, 87, 0.12);
+  padding: 9px 13px;
+  border-radius: 16px 16px 16px 4px;
+  font-size: 0.73rem;
+  color: var(--kai-t1);
+  line-height: 1.6;
+  max-width: 82%;
+}
+
+.kai-bot-bub strong {
+  color: var(--kai-green);
+}
+
+/* ── Burbuja del usuario ── */
+.kai-msg-user {
+  display: flex;
+  justify-content: flex-end;
+  animation: kaiMsgIn 0.3s ease;
+}
+
+.kai-user-bub {
+  background: var(--kai-green);
   color: #fff;
-  padding: 10px 14px;
-  border-radius: 18px 18px 4px 18px;
-  font-size: .74rem;
-  line-height: 1.65;
+  padding: 9px 13px;
+  border-radius: 16px 16px 4px 16px;
+  font-size: 0.73rem;
+  line-height: 1.6;
   max-width: 78%;
-  box-shadow: 0 4px 14px rgba(44,105,87,.28);
 }
 
-/* Opciones rápidas */
-.kopts {
+/* ── Botones de opciones ── */
+.kai-opts {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 2px 0 2px 38px;
-  animation: mIn .35s ease;
+  padding: 4px 0 4px 36px;
+  animation: kaiMsgIn 0.35s ease;
 }
 
-.kopt {
-  background: var(--w);
-  border: 1.5px solid rgba(44,105,87,.22);
-  color: var(--g);
+.kai-opt {
+  background: var(--kai-white);
+  border: 1.5px solid rgba(44, 105, 87, 0.22);
+  color: var(--kai-green);
   padding: 6px 13px;
   border-radius: 20px;
-  font-size: .64rem;
+  font-size: 0.66rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background .2s, color .2s, border-color .2s, transform .2s, box-shadow .2s;
+  transition: all 0.2s;
   font-family: inherit;
-  box-shadow: 0 2px 6px rgba(44,105,87,.07);
+  text-align: left;
 }
-.kopt:hover {
-  background: var(--g);
+
+.kai-opt:hover {
+  background: var(--kai-green);
   color: #fff;
-  border-color: var(--g);
+  border-color: var(--kai-green);
   transform: translateY(-2px);
-  box-shadow: 0 5px 14px rgba(44,105,87,.28);
 }
-.kopt:active { transform: translateY(0); }
 
-/* Indicador de escritura */
-.ktyp { display: flex; gap: 8px; align-items: flex-end; animation: mIn .3s ease; }
+.kai-opt:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
 
-.ktyp-bub {
-  background: linear-gradient(135deg, #f2f8f4, #eaf4ed);
-  border: 1px solid rgba(44,105,87,.12);
-  padding: 11px 15px;
-  border-radius: 18px 18px 18px 4px;
+/* ── Indicador de escritura ── */
+.kai-typing {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.kai-typing-bub {
+  background: #f0f6f2;
+  border: 1px solid rgba(44, 105, 87, 0.12);
+  padding: 10px 14px;
+  border-radius: 16px 16px 16px 4px;
   display: flex;
   gap: 4px;
   align-items: center;
 }
 
-.td {
-  width: 7px;
-  height: 7px;
+.kai-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--t3);
-  animation: td .9s infinite ease-in-out;
-}
-.td:nth-child(2) { animation-delay: .18s; }
-.td:nth-child(3) { animation-delay: .36s; }
-
-@keyframes td {
-  0%, 80%, 100% { transform: scale(.7); opacity: .3; }
-  40%            { transform: scale(1.15); opacity: 1; }
+  background: var(--kai-t3);
+  animation: kaiDot 0.9s infinite ease-in-out;
 }
 
-/* Mensaje del sistema (separador) */
-.ksys {
-  text-align: center;
-  font-size: .59rem;
-  color: var(--t3);
-  padding: 2px 12px;
-  animation: mIn .3s ease;
+.kai-dot:nth-child(2) { animation-delay: 0.2s; }
+.kai-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes kaiDot {
+  0%, 80%, 100% { transform: scale(0.8); opacity: 0.4; }
+  40%           { transform: scale(1.1); opacity: 1; }
 }
 
-/* ── FORMULARIO ───────────────────────── */
-.kform {
-  background: linear-gradient(135deg, #f8fbf9, #f2f8f4);
-  border: 1.5px solid rgba(44,105,87,.14);
-  border-radius: 18px;
-  padding: 14px;
-  margin: 4px 0 4px 38px;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  box-shadow: 0 4px 16px rgba(44,105,87,.07);
-  animation: mIn .35s ease;
-}
-
-.kform-ttl {
-  font-size: .7rem;
-  font-weight: 800;
-  color: var(--t1);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.kform-ttl i { color: var(--g); }
-
-.kfg { display: flex; flex-direction: column; gap: 3px; }
-
-.kfg label {
-  font-size: .57rem;
-  font-weight: 800;
-  color: var(--t3);
-  text-transform: uppercase;
-  letter-spacing: .8px;
-}
-
-.kfi { position: relative; }
-.kfi i {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--t3);
-  font-size: .68rem;
-  pointer-events: none;
-}
-.kfi.ta i { top: 11px; transform: none; }
-
-.kfg input,
-.kfg textarea {
-  width: 100%;
-  padding: 8px 10px 8px 30px;
-  border-radius: 10px;
-  border: 1.5px solid var(--bd);
-  background: #fff;
-  font-family: inherit;
-  font-size: .72rem;
-  color: var(--t1);
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
-  resize: none;
-}
-.kfg input:focus,
-.kfg textarea:focus {
-  border-color: var(--g);
-  box-shadow: 0 0 0 3px rgba(44,105,87,.09);
-}
-.kfg input::placeholder,
-.kfg textarea::placeholder { color: var(--t3); }
-.kfg textarea { min-height: 58px; }
-
-/* Divisor "¿Cómo prefieres continuar?" */
-.kdiv {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 2px 0;
-}
-.kdiv span {
-  font-size: .57rem;
-  color: var(--t3);
-  font-weight: 700;
-  white-space: nowrap;
-}
-.kdiv::before,
-.kdiv::after { content: ''; flex: 1; height: 1px; background: var(--bd); }
-
-.kform-btns { display: flex; gap: 7px; }
-
-.kbtn {
-  flex: 1;
-  padding: 9px 6px;
-  border-radius: 12px;
-  border: none;
-  font-weight: 800;
-  font-size: .67rem;
-  cursor: pointer;
-  font-family: inherit;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: filter .2s, transform .2s, box-shadow .2s;
-  letter-spacing: .2px;
-}
-.kbtn:hover { filter: brightness(1.08); transform: translateY(-2px); }
-.kbtn:active { transform: translateY(0); }
-
-.kbtn-wa { background: #25D366; color: #fff; box-shadow: 0 4px 14px rgba(37,211,102,.3); }
-.kbtn-em { background: var(--g);   color: #fff; box-shadow: 0 4px 14px rgba(44,105,87,.3); }
-
-.kform-hint {
-  font-size: .57rem;
-  color: var(--t3);
-  text-align: center;
-}
-
-/* ── BARRA DE ENTRADA ─────────────────── */
-.ki {
-  border-top: 1px solid var(--bd);
+/* ── Barra de entrada ── */
+.kai-input-row {
+  border-top: 1px solid var(--kai-border);
   padding: 10px 12px;
   display: flex;
   gap: 7px;
-  align-items: center;
   flex-shrink: 0;
-  background: #fafcfa;
+  background: #fff;
 }
 
-.ki input {
+.kai-input-row input {
   flex: 1;
-  padding: 9px 14px;
-  border-radius: 22px;
-  border: 1.5px solid var(--bd);
-  background: var(--w);
+  padding: 8px 13px;
+  border-radius: 20px;
+  border: 1.5px solid var(--kai-border);
+  background: #f8fbf9;
   font-family: inherit;
-  font-size: .74rem;
-  color: var(--t1);
+  font-size: 0.73rem;
+  color: var(--kai-t1);
   outline: none;
-  transition: border-color .2s, box-shadow .2s;
+  transition: border-color 0.2s;
 }
-.ki input:focus {
-  border-color: var(--g);
-  box-shadow: 0 0 0 3px rgba(44,105,87,.09);
-}
-.ki input::placeholder { color: var(--t3); }
 
-.ki-send {
-  width: 36px;
-  height: 36px;
+.kai-input-row input:focus {
+  border-color: var(--kai-green);
+}
+
+.kai-send-btn {
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, var(--g), var(--lime));
+  background: var(--kai-green);
   color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: .72rem;
+  font-size: 0.72rem;
+  transition: all 0.2s;
   flex-shrink: 0;
-  transition: transform .22s, box-shadow .22s;
-  box-shadow: 0 4px 12px rgba(44,105,87,.3);
-}
-.ki-send:hover {
-  transform: scale(1.12) rotate(-10deg);
-  box-shadow: 0 6px 18px rgba(44,105,87,.42);
 }
 
-/* ── RESPONSIVE ───────────────────────── */
-@media (max-width: 480px) {
-  #kayChat { right: 10px; bottom: 96px; width: calc(100vw - 20px); }
-  #kayBtn  { right: 14px; bottom: 14px; }
+.kai-send-btn:hover {
+  background: var(--kai-lime);
+  transform: scale(1.07);
 }

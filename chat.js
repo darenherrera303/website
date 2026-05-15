@@ -1,402 +1,316 @@
-/* =============================================
-   Kay · Widget JS — EIATEC (compatible Wix)
-   Debe cargarse con <script src="kay.js" defer>
-============================================= */
-(function () {
+/* ═══════════════════════════════════════
+   EIATEC · KAI · Lógica del Asistente
+   ═══════════════════════════════════════ */
 
-  /* ═══════════════════════════════════════════
-     ⚙️  CONFIGURACIÓN — edita estos valores
-  ═══════════════════════════════════════════ */
+(function () {
+  /* ─────────── CONFIGURACIÓN ─────────── */
   const CFG = {
-    // Números de WhatsApp (solo dígitos, con código de país 57)
-    wa: {
-      comercial:   '573000000001',  // ← reemplaza
-      humana:      '573000000002',  // ← reemplaza
-      hseq:        '573000000003',  // ← reemplaza
-      tecnica:     '573000000004',  // ← reemplaza
-      general:     '573001234567',  // ← número general EIATEC
+    // 📲 Cambia estos números por los reales de WhatsApp
+    whatsapp: {
+      comercial:       'https://wa.me/573000000001?text=Hola+EIATEC%2C+consulta+comercial',
+      gestionhumana:   'https://wa.me/573000000002?text=Hola%2C+consulta+de+Gesti%C3%B3n+Humana',
+      hseq:            'https://wa.me/573000000003?text=Hola%2C+consulta+HSEQ',
+      gerenciatecnica: 'https://wa.me/573000000004?text=Hola%2C+consulta+t%C3%A9cnica',
+      general:         'https://wa.me/573001234567?text=Hola+EIATEC%2C+quiero+m%C3%A1s+informaci%C3%B3n',
     },
-    // URLs de las secciones de tu web
-    url: {
+    // 🌐 Enlaces de la web
+    pages: {
       servicios: 'https://www.eiatec.com.co/servicios',
       proyectos: 'https://www.eiatec.com.co/proyectos',
       nosotros:  'https://www.eiatec.com.co/nosotros',
       contacto:  'https://www.eiatec.com.co/contacto',
       blog:      'https://www.eiatec.com.co/blog',
     },
-    // Correos por área
-    mail: {
-      comercial:  'comercial@eiatec.com',
-      humana:     'gestionhumana@eiatec.com',
-      hseq:       'hseq@eiatec.com',
-      tecnica:    'gerenciatecnica@eiatec.com',
-      juridica:   'gestionjuridica@eiatec.com',
-      compras:    'compras@eiatec.com',
-      general:    'comercial@eiatec.com',
+    // ✉️ Correos por área
+    emails: {
+      comercial:       'comercial@eiatec.com',
+      gestionhumana:   'gestionhumana@eiatec.com',
+      contabilidad:    'contabilidad@eiatec.com',
+      hseq:            'hseq@eiatec.com',
+      gestionjuridica: 'gestionjuridica@eiatec.com',
+      gerenciatecnica: 'gerenciatecnica@eiatec.com',
+      compras:         'compras@eiatec.com',
     },
-    // Avatar de Kai
-    avatar: 'https://static.wixstatic.com/media/2801d6_51ce4f450a744caeb76eeee572a36286~mv2.png',
+    // 🐾 Imagen de Kai
+    mascotImg: 'https://static.wixstatic.com/media/2801d6_51ce4f450a744caeb76eeee572a36286~mv2.png',
   };
 
-  /* ═══════════════════════════════════════════
-     FLUJOS DE CONVERSACIÓN (sin cambios)
-  ═══════════════════════════════════════════ */
+  /* ─────────── FLUJOS DE CONVERSACIÓN ─────────── */
   const FLOWS = {
     inicio: {
-      msg: `¡Hola! 👋 Soy <strong>Kai</strong>, el asistente virtual de <strong>EIATEC</strong>.<br>
-            Estoy aquí para ayudarte. ¿Por dónde empezamos?`,
+      msg: '¡Hola! 👋 Soy **Kai**, el asistente virtual de **EIATEC**.\n¿En qué puedo ayudarte hoy?',
       opts: [
-        { e: '📋', l: 'Nuestros servicios',   n: 'servicios' },
-        { e: '🗂️', l: 'Proyectos realizados', n: 'proyectos' },
-        { e: '🕐', l: 'Horarios de atención', n: 'horarios'  },
-        { e: '📩', l: 'Hablar con un asesor', n: 'asesor'    },
-        { e: '🌐', l: 'Ir al sitio web',      n: 'web'       },
+        { label: '📋 Ver nuestros servicios', next: 'servicios' },
+        { label: '🗂️ Proyectos realizados',   next: 'proyectos' },
+        { label: '🕐 Horarios de atención',   next: 'horarios' },
+        { label: '📩 Hablar con un asesor',   next: 'asesor' },
+        { label: '🌐 Ir a nuestra web',        next: 'web' },
       ],
     },
     servicios: {
-      msg: `En <strong>EIATEC</strong> ofrecemos soluciones ambientales integrales:<br><br>
-            🌿 Estudios de Impacto Ambiental (EIA)<br>
-            🤝 Consulta Previa con comunidades<br>
-            💧 Gestión de Recursos Hídricos<br>
-            🦋 Flora, Fauna y Biodiversidad<br>
-            ☀️ Energía Renovable<br>
-            🏛️ Arqueología y Patrimonio<br>
-            ♻️ Sostenibilidad Empresarial<br>
-            🚚 Logística Ambiental<br><br>
-            ¿Te gustaría saber más?`,
+      msg: 'Ofrecemos servicios en:\n• Estudios de Impacto Ambiental (EIA)\n• Consulta Previa\n• Gestión Hídrica\n• Flora, Fauna y Biodiversidad\n• Energía Renovable\n• Arqueología\n• Sostenibilidad Empresarial\n• Logística Ambiental\n\n¿Deseas más detalle?',
       opts: [
-        { e: '🔗', l: 'Ver todos los servicios', a: () => open(CFG.url.servicios, '_top') },
-        { e: '📩', l: 'Consultar un servicio',   n: 'asesor' },
-        { e: '🏠', l: 'Volver al inicio',        n: 'inicio' },
+        { label: '🔗 Ver todos los servicios', action: () => open(CFG.pages.servicios, '_top') },
+        { label: '📩 Consultar sobre un servicio', next: 'asesor' },
+        { label: '🏠 Volver al inicio', next: 'inicio' },
       ],
     },
     proyectos: {
-      msg: `Hemos realizado <strong>más de 30 proyectos</strong> exitosos en Colombia 🇨🇴<br><br>
-            EIAs, consultas previas, monitoreo de fauna, energía solar,
-            compensaciones forestales y mucho más.`,
+      msg: 'Hemos realizado más de **30 proyectos** en toda Colombia: EIAs, consultas previas, monitoreo de fauna, compensaciones forestales, energía solar y más.',
       opts: [
-        { e: '🔗', l: 'Ver proyectos', a: () => open(CFG.url.proyectos, '_top') },
-        { e: '📩', l: 'Contactar',     n: 'asesor' },
-        { e: '🏠', l: 'Inicio',        n: 'inicio' },
+        { label: '🔗 Ver proyectos', action: () => open(CFG.pages.proyectos, '_top') },
+        { label: '🏠 Volver al inicio', next: 'inicio' },
       ],
     },
     horarios: {
-      msg: `🕐 <strong>Horarios de atención:</strong><br><br>
-            📅 Lunes a Viernes<br>
-            ⏰ 8:00 a.m. – 6:00 p.m.<br><br>
-            📞 <strong>(1) 704 2362</strong> / <strong>(1) 245 0961</strong><br>
-            📍 Bogotá D.C. · Calle 45 C Bis #23-37<br><br>
-            Fuera de horario puedes escribirnos por WhatsApp o correo. 😊`,
+      msg: '🕐 **Horarios de atención:**\n\n📅 Lunes a Viernes\n⏰ 8:00 am – 6:00 pm\n\n📞 Teléfonos: (1) 704 2362 / (1) 245 0961\n📍 Bogotá D.C. · Calle 45 C Bis #23-37\n\nFuera de horario puedes escribirnos por WhatsApp o correo.',
       opts: [
-        { e: '💬', l: 'WhatsApp', a: () => open(`https://wa.me/${CFG.wa.general}`, '_blank') },
-        { e: '✉️', l: 'Correo',   a: () => open(`mailto:${CFG.mail.general}`) },
-        { e: '🏠', l: 'Inicio',   n: 'inicio' },
+        { label: '💬 Escribir por WhatsApp', action: () => open(CFG.whatsapp.general, '_blank') },
+        { label: '✉️ Enviar correo', action: () => open(`mailto:${CFG.emails.comercial}`) },
+        { label: '🏠 Volver al inicio', next: 'inicio' },
       ],
     },
     asesor: {
-      msg: `¡Perfecto! Dime, ¿sobre qué área necesitas ayuda?`,
+      msg: 'Perfecto. ¿Sobre qué área es tu consulta?',
       opts: [
-        { e: '💼', l: 'Comercial / Proyectos', n: 'f_comercial' },
-        { e: '🛡️', l: 'HSEQ',                 n: 'f_hseq'      },
-        { e: '🔧', l: 'Gerencia Técnica',      n: 'f_tecnica'   },
-        { e: '👥', l: 'Gestión Humana',        n: 'f_humana'    },
-        { e: '⚖️', l: 'Gestión Jurídica',      n: 'f_juridica'  },
-        { e: '🏠', l: 'Volver',               n: 'inicio'      },
+        { label: '💼 Comercial / Proyectos', next: 'contacto_comercial' },
+        { label: '🛡️ HSEQ',                  next: 'contacto_hseq' },
+        { label: '🔧 Gerencia Técnica',       next: 'contacto_tecnica' },
+        { label: '👥 Gestión Humana',         next: 'contacto_rrhh' },
+        { label: '📦 Otras áreas',            next: 'contacto_otras' },
       ],
     },
-    f_comercial: { type: 'form', label: 'Comercial',        wa: 'comercial', mail: 'comercial' },
-    f_hseq:      { type: 'form', label: 'HSEQ',             wa: 'hseq',      mail: 'hseq'      },
-    f_tecnica:   { type: 'form', label: 'Gerencia Técnica', wa: 'tecnica',   mail: 'tecnica'   },
-    f_humana:    { type: 'form', label: 'Gestión Humana',   wa: 'humana',    mail: 'humana'    },
-    f_juridica:  { type: 'form', label: 'Gestión Jurídica', wa: 'general',   mail: 'juridica'  },
-    web: {
-      msg: `¿A qué sección quieres ir? 🌐`,
+    contacto_comercial: {
+      msg: 'Te comunico con el área **Comercial**. ¿Cómo prefieres contactarnos?',
       opts: [
-        { e: '⚙️', l: 'Servicios', a: () => open(CFG.url.servicios, '_top') },
-        { e: '📁', l: 'Proyectos', a: () => open(CFG.url.proyectos, '_top') },
-        { e: '🏢', l: 'Nosotros',  a: () => open(CFG.url.nosotros,  '_top') },
-        { e: '✉️', l: 'Contacto',  a: () => open(CFG.url.contacto,  '_top') },
-        { e: '📰', l: 'Blog',      a: () => open(CFG.url.blog,      '_top') },
-        { e: '🏠', l: 'Volver',   n: 'inicio' },
+        { label: '💬 WhatsApp Comercial', action: () => open(CFG.whatsapp.comercial, '_blank') },
+        { label: `✉️ Email: ${CFG.emails.comercial}`, action: () => open(`mailto:${CFG.emails.comercial}`) },
+        { label: '🏠 Volver al inicio', next: 'inicio' },
+      ],
+    },
+    contacto_hseq: {
+      msg: 'Te comunico con el área **HSEQ**. ¿Cómo prefieres contactarnos?',
+      opts: [
+        { label: '💬 WhatsApp HSEQ', action: () => open(CFG.whatsapp.hseq, '_blank') },
+        { label: `✉️ Email: ${CFG.emails.hseq}`, action: () => open(`mailto:${CFG.emails.hseq}`) },
+        { label: '🏠 Volver al inicio', next: 'inicio' },
+      ],
+    },
+    contacto_tecnica: {
+      msg: 'Te comunico con **Gerencia Técnica**. ¿Cómo prefieres contactarnos?',
+      opts: [
+        { label: '💬 WhatsApp Técnico', action: () => open(CFG.whatsapp.gerenciatecnica, '_blank') },
+        { label: `✉️ Email: ${CFG.emails.gerenciatecnica}`, action: () => open(`mailto:${CFG.emails.gerenciatecnica}`) },
+        { label: '🏠 Volver al inicio', next: 'inicio' },
+      ],
+    },
+    contacto_rrhh: {
+      msg: 'Te comunico con **Gestión Humana**. ¿Cómo prefieres contactarnos?',
+      opts: [
+        { label: '💬 WhatsApp RR.HH.', action: () => open(CFG.whatsapp.gestionhumana, '_blank') },
+        { label: `✉️ Email: ${CFG.emails.gestionhumana}`, action: () => open(`mailto:${CFG.emails.gestionhumana}`) },
+        { label: '🏠 Volver al inicio', next: 'inicio' },
+      ],
+    },
+    contacto_otras: {
+      msg: 'Para otras consultas puedes contactarnos por:\n📞 (1) 704 2362\n✉️ comercial@eiatec.com\n\n¿Cómo prefieres continuar?',
+      opts: [
+        { label: '💬 WhatsApp General', action: () => open(CFG.whatsapp.general, '_blank') },
+        { label: '✉️ Enviar correo', action: () => open(`mailto:${CFG.emails.comercial}`) },
+        { label: '🏠 Volver al inicio', next: 'inicio' },
+      ],
+    },
+    web: {
+      msg: '¿A qué sección de nuestra web quieres ir?',
+      opts: [
+        { label: '⚙️ Servicios', action: () => open(CFG.pages.servicios, '_top') },
+        { label: '📁 Proyectos', action: () => open(CFG.pages.proyectos, '_top') },
+        { label: '🏢 Nosotros',  action: () => open(CFG.pages.nosotros, '_top') },
+        { label: '✉️ Contacto',  action: () => open(CFG.pages.contacto, '_top') },
+        { label: '📰 Blog',      action: () => open(CFG.pages.blog, '_top') },
+        { label: '🏠 Volver',    next: 'inicio' },
       ],
     },
   };
 
-  /* ═══════════════════════════════════════════
-     MOTOR DEL CHAT
-     (IDs y clases reales: #kayChat, .bm, .um, .kopts…)
-  ═══════════════════════════════════════════ */
-  let isOpen  = false;
+  /* ─────────── ESTADO ─────────── */
+  let isOpen = false;
   let started = false;
-  let chatEl, dotEl, box, inp;
+  const mascotBtn = document.getElementById('kai-mascot');
+  const chatEl = document.getElementById('kai-chat');
+  const notifDot = document.getElementById('kai-notif');
 
-  // Intenta encontrar los elementos del DOM, reintenta si no existen
-  function initWhenReady() {
-    chatEl = document.getElementById('kayChat');
-    dotEl  = document.getElementById('kayDot');
-    box    = document.getElementById('kMsgs');
-    inp    = document.getElementById('kInp');
+  /* ─────────── CONSTRUIR EL CHAT ─────────── */
+  function buildChat() {
+    chatEl.innerHTML = `
+      <div class="kai-ch-header">
+        <div class="kai-ch-avatar">
+          <img src="${CFG.mascotImg}" alt="Kai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center">🌿</span>
+        </div>
+        <div class="kai-ch-info">
+          <strong>Kai · EIATEC</strong>
+          <span>En línea ahora</span>
+        </div>
+        <button class="kai-ch-close" id="kai-close-btn">✕</button>
+      </div>
+      <div class="kai-msgs" id="kai-msgs"></div>
+      <div class="kai-input-row">
+        <input id="kai-inp" type="text" placeholder="Escribe tu mensaje…" autocomplete="off">
+        <button class="kai-send-btn" id="kai-send-btn">➤</button>
+      </div>
+    `;
 
-    if (chatEl && dotEl && box && inp) {
-      setupChat();
-    } else {
-      setTimeout(initWhenReady, 50);
+    document.getElementById('kai-close-btn').addEventListener('click', toggleChat);
+    document.getElementById('kai-send-btn').addEventListener('click', handleInput);
+    const inp = document.getElementById('kai-inp');
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleInput();
+    });
+  }
+
+  buildChat();
+
+  /* ─────────── TOGGLE ─────────── */
+  function toggleChat() {
+    isOpen = !isOpen;
+    chatEl.classList.toggle('open', isOpen);
+    if (notifDot) notifDot.style.display = 'none';
+    if (isOpen && !started) {
+      started = true;
+      setTimeout(() => goFlow('inicio'), 400);
+    }
+    if (isOpen) {
+      setTimeout(() => {
+        const inp = document.getElementById('kai-inp');
+        if (inp) inp.focus();
+      }, 350);
     }
   }
 
-  function setupChat() {
-    // Abrir / cerrar
-    window.toggleKay = function () {
-      isOpen = !isOpen;
-      chatEl.classList.toggle('open', isOpen);
-      if (dotEl) dotEl.style.display = 'none';
+  if (mascotBtn) {
+    mascotBtn.addEventListener('click', toggleChat);
+  }
 
-      if (isOpen && !started) {
-        started = true;
-        setTimeout(() => goFlow('inicio'), 380);
+  setTimeout(() => {
+    if (notifDot && !started) {
+      notifDot.style.display = 'block';
+      if (mascotBtn) {
+        mascotBtn.style.animation = 'none';
+        setTimeout(() => { mascotBtn.style.animation = ''; }, 50);
       }
-      if (isOpen) setTimeout(() => inp && inp.focus(), 340);
-    };
-
-    // Badge de notificación
-    setTimeout(() => { if (dotEl) dotEl.style.display = 'flex'; }, 2800);
-
-    // Escuchar Enter en el input
-    if (inp) {
-      inp.addEventListener('keydown', e => { if (e.key === 'Enter') handleKayInput(); });
     }
+  }, 3000);
 
-    // Señal de listo para Wix
-    function sendReady() { window.parent && window.parent.postMessage('READY', '*'); }
-    sendReady();
-    setTimeout(sendReady, 600);
+  /* ─────────── HELPERS ─────────── */
+  function msgsEl() { return document.getElementById('kai-msgs'); }
+
+  function scroll() {
+    setTimeout(() => {
+      const m = msgsEl();
+      if (m) m.scrollTop = m.scrollHeight;
+    }, 80);
   }
 
-  /* ── Scroll al último mensaje ── */
-  function scroll() { setTimeout(() => { if (box) box.scrollTop = box.scrollHeight; }, 80); }
-
-  /* ── Burbuja del bot ── */
-  function addBot(html) {
-    const w = document.createElement('div');
-    w.className = 'bm';
-    w.innerHTML = `
-      <div class="bm-av"><img src="${CFG.avatar}" alt="Kai"></div>
-      <div class="bm-bub">${html}</div>`;
-    box.appendChild(w);
+  function addBot(text) {
+    const el = document.createElement('div');
+    el.className = 'kai-msg-bot';
+    const html = text.replace(/\n/g, '<br>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    el.innerHTML = `
+      <div class="kai-bot-av">
+        <img src="${CFG.mascotImg}" alt="Kai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:.6rem">🌿</span>
+      </div>
+      <div class="kai-bot-bub">${html}</div>
+    `;
+    msgsEl().appendChild(el);
     scroll();
   }
 
-  /* ── Burbuja del usuario ── */
-  function addUser(txt) {
-    const w = document.createElement('div');
-    w.className = 'um';
-    w.innerHTML = `<div class="um-bub">${txt}</div>`;
-    box.appendChild(w);
+  function addUser(text) {
+    const el = document.createElement('div');
+    el.className = 'kai-msg-user';
+    el.innerHTML = `<div class="kai-user-bub">${text}</div>`;
+    msgsEl().appendChild(el);
     scroll();
   }
 
-  /* ── Chips de opciones ── */
   function addOpts(opts) {
-    const w = document.createElement('div');
-    w.className = 'kopts';
+    const el = document.createElement('div');
+    el.className = 'kai-opts';
     opts.forEach(o => {
       const b = document.createElement('button');
-      b.className = 'kopt';
-      b.innerHTML = `${o.e || ''} ${o.l}`;
-      b.onclick = () => {
-        w.querySelectorAll('.kopt').forEach(x => { x.disabled = true; x.style.opacity = '.42'; });
-        addUser(`${o.e || ''} ${o.l}`);
-        if (o.a) { setTimeout(o.a, 180); setTimeout(askAgain, 700); }
-        else if (o.n) showTyping(() => goFlow(o.n));
-      };
-      w.appendChild(b);
+      b.className = 'kai-opt';
+      b.textContent = o.label;
+      b.addEventListener('click', () => {
+        el.querySelectorAll('.kai-opt').forEach(x => { x.disabled = true; x.style.opacity = '0.45'; });
+        addUser(o.label);
+        if (o.action) {
+          setTimeout(o.action, 200);
+        } else if (o.next) {
+          showTyping(() => goFlow(o.next));
+        }
+      });
+      el.appendChild(b);
     });
-    box.appendChild(w);
+    msgsEl().appendChild(el);
     scroll();
   }
 
-  /* ── Indicador de escritura ── */
   function showTyping(cb) {
-    const w = document.createElement('div');
-    w.className = 'ktyp';
-    w.innerHTML = `
-      <div class="bm-av"><img src="${CFG.avatar}" alt="Kai"></div>
-      <div class="ktyp-bub">
-        <div class="td"></div><div class="td"></div><div class="td"></div>
-      </div>`;
-    box.appendChild(w);
+    const el = document.createElement('div');
+    el.className = 'kai-typing';
+    el.innerHTML = `
+      <div class="kai-bot-av" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#2C6957,#62B455);display:flex;align-items:center;justify-content:center;font-size:.6rem">🌿</div>
+      <div class="kai-typing-bub">
+        <div class="kai-dot"></div>
+        <div class="kai-dot"></div>
+        <div class="kai-dot"></div>
+      </div>
+    `;
+    msgsEl().appendChild(el);
     scroll();
-    setTimeout(() => { w.remove(); cb(); }, 820);
+    setTimeout(() => { el.remove(); cb(); }, 900);
   }
 
-  /* ── Separador de sistema ── */
-  function addSys(txt) {
-    const w = document.createElement('div');
-    w.className = 'ksys';
-    w.textContent = txt;
-    box.appendChild(w);
-    scroll();
-  }
-
-  /* ── Ir a un flujo ── */
   function goFlow(key) {
     const f = FLOWS[key];
     if (!f) return;
-    if (f.type === 'form') { showForm(f); return; }
     addBot(f.msg);
-    setTimeout(() => addOpts(f.opts), 220);
+    setTimeout(() => addOpts(f.opts), 200);
   }
 
-  /* ── Formulario de contacto (clases .kform, .kfi, etc.) ── */
-  function showForm(f) {
-    const subj = `Consulta ${f.label} · EIATEC`;
-
-    const el = document.createElement('div');
-    el.className = 'kform';
-    el.innerHTML = `
-      <p class="kform-ttl"><i class="fas fa-paper-plane"></i> Cuéntanos tu consulta</p>
-
-      <div class="kfg">
-        <label>Nombre *</label>
-        <div class="kfi"><i class="fas fa-user"></i>
-          <input id="kfn" type="text" placeholder="Tu nombre" autocomplete="given-name">
-        </div>
-      </div>
-
-      <div class="kfg">
-        <label>Correo (opcional)</label>
-        <div class="kfi"><i class="fas fa-envelope"></i>
-          <input id="kfe" type="email" placeholder="correo@empresa.com" autocomplete="email">
-        </div>
-      </div>
-
-      <div class="kfg">
-        <label>Teléfono (opcional)</label>
-        <div class="kfi"><i class="fas fa-phone"></i>
-          <input id="kft" type="tel" placeholder="+57 300 000 0000" autocomplete="tel">
-        </div>
-      </div>
-
-      <div class="kfg">
-        <label>Mensaje (opcional)</label>
-        <div class="kfi ta"><i class="fas fa-comment"></i>
-          <textarea id="kfm" placeholder="Cuéntanos brevemente tu consulta o proyecto…"></textarea>
-        </div>
-      </div>
-
-      <div class="kdiv"><span>¿Cómo prefieres continuar?</span></div>
-
-      <div class="kform-btns">
-        <button class="kbtn kbtn-wa" id="kfwa">
-          <i class="fab fa-whatsapp"></i> WhatsApp
-        </button>
-        <button class="kbtn kbtn-em" id="kfem">
-          <i class="fas fa-envelope"></i> Correo
-        </button>
-      </div>
-      <p class="kform-hint">Solo tu nombre es obligatorio</p>`;
-
-    box.appendChild(el);
-    scroll();
-
-    function getData() {
-      return {
-        name:  (document.getElementById('kfn')?.value || '').trim(),
-        email: (document.getElementById('kfe')?.value || '').trim(),
-        phone: (document.getElementById('kft')?.value || '').trim(),
-        msg:   (document.getElementById('kfm')?.value || '').trim(),
-      };
-    }
-
-    // Botón WhatsApp
-    document.getElementById('kfwa').onclick = () => {
-      const d = getData();
-      if (!d.name) { document.getElementById('kfn').focus(); return; }
-
-      const phone = CFG.wa[f.wa] || CFG.wa.general;
-      const text  = [
-        `Hola Kai, soy ${d.name}.`,
-        d.phone  ? `Tel: ${d.phone}.`   : '',
-        d.email  ? `Email: ${d.email}.` : '',
-        `Consulta: ${f.label}.`,
-        d.msg    ? d.msg                : '',
-      ].filter(Boolean).join(' ');
-
-      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
-      el.remove();
-      addBot(`¡Listo! 🚀 Abrí WhatsApp con tu consulta. Solo envía el mensaje y te contactaremos pronto.`);
-      askAgain();
-    };
-
-    // Botón Correo
-    document.getElementById('kfem').onclick = () => {
-      const d    = getData();
-      if (!d.name) { document.getElementById('kfn').focus(); return; }
-
-      const to   = CFG.mail[f.mail] || CFG.mail.general;
-      const sub  = encodeURIComponent(subj);
-      const body = encodeURIComponent(
-        `Hola,\n\nSoy ${d.name}.` +
-        (d.phone ? `\nTeléfono: ${d.phone}` : '') +
-        (d.email ? `\nCorreo: ${d.email}` : '') +
-        `\n\n${d.msg || 'Quisiera recibir información sobre los servicios de EIATEC.'}` +
-        `\n\nSaludos.`
-      );
-
-      window.location.href = `mailto:${to}?subject=${sub}&body=${body}`;
-      el.remove();
-      addBot(`✉️ Perfecto. Abrí tu correo con todo pre-llenado. ¡Solo dale enviar!`);
-      askAgain();
-    };
-  }
-
-  /* ── Pregunta final ── */
-  function askAgain() {
-    setTimeout(() => {
-      addSys('─────────────────');
-      addBot('¿Puedo ayudarte con algo más? 😊');
-      setTimeout(() => {
-        addOpts([
-          { e: '✅', l: 'Sí, otra consulta', n: 'inicio' },
-          { e: '👋', l: 'No, gracias',        a: () => {
-            addBot('¡Fue un placer! Recuerda que puedes escribirme cuando quieras. 🌿<br>¡Hasta pronto!');
-            setTimeout(() => toggleKay(), 2600);
-          }},
-        ]);
-      }, 260);
-    }, 900);
-  }
-
-  /* ── Entrada libre de texto ── */
-  window.handleKayInput = function () {
+  function handleInput() {
+    const inp = document.getElementById('kai-inp');
+    if (!inp) return;
     const v = inp.value.trim();
     if (!v) return;
     inp.value = '';
     addUser(v);
 
-    const l = v.toLowerCase();
-    if (/servicio|eia|impacto|ambiental|hídric|forestal|fauna|flora/.test(l))
-      showTyping(() => goFlow('servicios'));
-    else if (/proyecto|portafolio|referencia|trabajo/.test(l))
-      showTyping(() => goFlow('proyectos'));
-    else if (/horario|hora|atencion|abre|cierra|oficina/.test(l))
-      showTyping(() => goFlow('horarios'));
-    else if (/contacto|asesor|hablar|whatsapp|correo|email/.test(l))
-      showTyping(() => goFlow('asesor'));
-    else if (/web|pagina|sitio|url/.test(l))
-      showTyping(() => goFlow('web'));
-    else
+    const lv = v.toLowerCase();
+    if (/servicio|eia|impacto|ambiental/.test(lv)) showTyping(() => goFlow('servicios'));
+    else if (/proyecto|trabajo|referencia/.test(lv)) showTyping(() => goFlow('proyectos'));
+    else if (/horario|hora|atencion|abre/.test(lv)) showTyping(() => goFlow('horarios'));
+    else if (/whatsapp|asesor|hablar|contacto|correo|email/.test(lv)) showTyping(() => goFlow('asesor'));
+    else if (/web|pagina|sitio/.test(lv)) showTyping(() => goFlow('web'));
+    else {
       showTyping(() => {
-        addBot('Entiendo. 🤔 Déjame conectarte con el asesor indicado para tu consulta.');
-        setTimeout(() => goFlow('asesor'), 200);
+        addBot('Entiendo tu consulta. Te recomiendo hablar directamente con uno de nuestros asesores. ¿Cómo prefieres contactarnos?');
+        setTimeout(() => addOpts([
+          { label: '💬 WhatsApp', action: () => open(CFG.whatsapp.general, '_blank') },
+          { label: '✉️ Correo', action: () => open(`mailto:${CFG.emails.comercial}`) },
+          { label: '🏠 Menú principal', next: 'inicio' },
+        ]), 200);
       });
-  };
-
-  // Arranque seguro
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initWhenReady);
-  } else {
-    initWhenReady();
+    }
   }
+
+  /* ─────────── API GLOBAL ─────────── */
+  window.KaiChat = {
+    toggle: toggleChat,
+    open: () => { if (!isOpen) toggleChat(); },
+    close: () => { if (isOpen) toggleChat(); },
+  };
 
 })();
