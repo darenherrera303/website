@@ -1,12 +1,12 @@
 (function(){
   /* =============================================
-     Kay · Asistente Virtual de EIATEC (v3 – Playful & Natural)
+     Kay · Asistente Virtual de EIATEC
      ============================================= */
   const KAY_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
 
   const CFG = {
     whatsapp: {
-      comercial:       '573000000001',   // ← Cambiar por el real
+      comercial:       '573000000001',
       gestionhumana:   '573000000002',
       hseq:            '573000000003',
       gerenciatecnica: '573000000004',
@@ -29,7 +29,7 @@
 
   const FLOWS = {
     inicio: {
-      msg: '¡Hola! 👋 Soy <strong>Kay</strong>, tu asistente virtual de eiatec.<br>¿En qué puedo ayudarte hoy?',
+      msg: '¡Hola! 👋 Soy <strong>Kai</strong>, tu asistente virtual de eiatec.<br>¿En qué puedo ayudarte hoy?',
       opts: [
         {label:'📋 Servicios', next:'servicios'},
         {label:'🗂️ Proyectos', next:'proyectos'},
@@ -41,23 +41,23 @@
     servicios: {
       msg:'Ofrecemos servicios en:<br>• Estudios de Impacto Ambiental (EIA)<br>• Consulta Previa<br>• Gestión Hídrica<br>• Flora, Fauna y Biodiversidad<br>• Energía Renovable<br>• Arqueología<br>• Sostenibilidad Empresarial<br>• Logística Ambiental<br>¿Deseas más detalle?',
       opts:[
-        {label:'🔗 Ver servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
+        {label:'🔗 Ver servicios', action:()=>open(CFG.pages.servicios,'_top')},
         {label:'📩 Consultar', next:'asesor'},
-        {label:'↩️ Volver', next:'inicio'},
+        {label:'🏠 Inicio', next:'inicio'},
       ]
     },
     proyectos: {
       msg:'Hemos realizado más de 30 proyectos en Colombia.',
       opts:[
-        {label:'🔗 Ver proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
-        {label:'↩️ Volver', next:'inicio'},
+        {label:'🔗 Ver proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
+        {label:'🏠 Inicio', next:'inicio'},
       ]
     },
     horarios: {
       msg:'🕐 <strong>Horarios de atención:</strong><br><br>📅 Lunes a Viernes<br>⏰ 8:00 am – 6:00 pm<br><br>📞 Teléfonos: (1) 704 2362 / (1) 245 0961<br>📍 Bogotá D.C.',
       opts:[
         {label:'📩 Contactar', next:'asesor'},
-        {label:'↩️ Volver', next:'inicio'},
+        {label:'🏠 Inicio', next:'inicio'},
       ]
     },
     asesor: {
@@ -68,7 +68,6 @@
         {label:'🔧 Técnica',   next:'form_tecnica'},
         {label:'👥 RR.HH.',    next:'form_rrhh'},
         {label:'📦 Otra',      next:'form_otra'},
-        {label:'↩️ Volver',    next:'inicio'},
       ]
     },
     form_comercial:  { type:'form', area:'comercial' },
@@ -79,12 +78,12 @@
     web: {
       msg:'¿A qué sección deseas ir?',
       opts:[
-        {label:'⚙️ Servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
-        {label:'📁 Proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
-        {label:'🏢 Nosotros',  action:()=>window.open(CFG.pages.nosotros,'_top')},
-        {label:'✉️ Contacto',  action:()=>window.open(CFG.pages.contacto,'_top')},
-        {label:'📰 Blog',      action:()=>window.open(CFG.pages.blog,'_top')},
-        {label:'↩️ Volver',    next:'inicio'},
+        {label:'⚙️ Servicios', action:()=>open(CFG.pages.servicios,'_top')},
+        {label:'📁 Proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
+        {label:'🏢 Nosotros',  action:()=>open(CFG.pages.nosotros,'_top')},
+        {label:'✉️ Contacto',  action:()=>open(CFG.pages.contacto,'_top')},
+        {label:'📰 Blog',      action:()=>open(CFG.pages.blog,'_top')},
+        {label:'🏠 Inicio',    next:'inicio'},
       ]
     },
   };
@@ -95,14 +94,6 @@
   const inp    = document.getElementById('eiabot-inp');
   let started  = false;
   let currentFlow = 'inicio';
-  let flowStack = [];
-
-  function pushFlow(flowKey){
-    if(flowKey !== currentFlow) flowStack.push(currentFlow);
-  }
-  function popFlow(){
-    return flowStack.pop() || 'inicio';
-  }
 
   function scroll(){ setTimeout(()=>msgs.scrollTop=msgs.scrollHeight,80); }
 
@@ -154,7 +145,6 @@
   function goFlow(key){
     const f = FLOWS[key];
     if(!f) return;
-    if(f.type !== 'form') pushFlow(key);
     if(f.type === 'form'){
       showForm(f.area);
     } else {
@@ -198,6 +188,7 @@
     msgs.appendChild(formEl);
     scroll();
 
+    // Lógica para WhatsApp
     document.getElementById('eiabot-fwa').onclick = () => {
       const data = getFormData(area);
       if(!data.name) {
@@ -207,12 +198,13 @@
       const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
       const body = `Hola Kay, soy ${data.name}.${data.email ? ' Email: '+data.email+'.' : ''} Asunto: ${data.subject}.${data.msg ? ' Mensaje: '+data.msg : ''}`;
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
-      window.open(url, '_blank');
+      open(url, '_blank');
       formEl.remove();
-      addBot('✅ ¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
+      addBot('¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
       askAgain();
     };
 
+    // Lógica para Correo
     document.getElementById('eiabot-femailbtn').onclick = () => {
       const data = getFormData(area);
       if(!data.name) {
@@ -224,7 +216,7 @@
       const body = encodeURIComponent(`Hola Kay,\n\nSoy ${data.name}.${data.email ? ' Mi correo es: '+data.email+'.' : ''}\n\n${data.msg ? 'Mensaje: '+data.msg : ''}\n\nSaludos.`);
       window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
       formEl.remove();
-      addBot('📧 ¡Listo! He preparado un correo para que lo envíes. Solo revisa y haz clic en enviar.');
+      addBot('¡Listo! He preparado un correo para que lo envíes. Solo revisa y haz clic en enviar.');
       askAgain();
     };
   }
@@ -264,46 +256,24 @@
     }, 800);
   }
 
-  /* ── ENTRADA DE TEXTO NATURAL ── */
+  /* ── ENTRADA DE TEXTO ── */
   function handleInput(){
     const v = inp.value.trim();
     if(!v) return;
     inp.value = '';
     addUser(v);
     const lv = v.toLowerCase();
-
-    if(/^(hola|buenos días|buenas tardes|buenas noches|hey|hi|saludos)/i.test(lv)){
+    if(/servicio|eia|impacto|ambiental/.test(lv)) showTyping(()=>goFlow('servicios'));
+    else if(/proyecto|trabajo|referencia/.test(lv)) showTyping(()=>goFlow('proyectos'));
+    else if(/horario|hora/.test(lv)) showTyping(()=>goFlow('horarios'));
+    else if(/contacto|asesor|hablar/.test(lv)) showTyping(()=>goFlow('asesor'));
+    else if(/web|pagina|sitio/.test(lv)) showTyping(()=>goFlow('web'));
+    else {
       showTyping(()=>{
-        addBot('¡Hola! 😊 ¿En qué puedo ayudarte hoy?');
-        goFlow('inicio');
-      });
-      return;
-    }
-    if(/^(adiós|chao|bye|gracias|muchas gracias|nos vemos)/i.test(lv)){
-      addBot('¡Gracias a ti! 🤗 Estoy aquí cuando me necesites.');
-      setTimeout(() => minimize(), 2500);
-      return;
-    }
-
-    if(/servicio|eia|impacto|ambiental|estudio/i.test(lv)){
-      showTyping(()=>goFlow('servicios'));
-    } else if(/proyecto|trabajo|referencia|portafolio/i.test(lv)){
-      showTyping(()=>goFlow('proyectos'));
-    } else if(/horario|hora|atención/i.test(lv)){
-      showTyping(()=>goFlow('horarios'));
-    } else if(/contacto|asesor|hablar|comunicar|ayuda/i.test(lv)){
-      showTyping(()=>goFlow('asesor'));
-    } else if(/web|página|sitio|link/i.test(lv)){
-      showTyping(()=>goFlow('web'));
-    } else if(/volver|atrás|regresar|inicio|menú/i.test(lv)){
-      showTyping(()=>goFlow('inicio'));
-    } else {
-      showTyping(()=>{
-        addBot('🤔 No estoy seguro de haber entendido. ¿Te refieres a algo de esto?');
+        addBot('No entendí tu solicitud. ¿Te gustaría que te comunique con un asesor?');
         setTimeout(()=>addOpts([
-          {label:'📋 Servicios', next:'servicios'},
-          {label:'📩 Contactar', next:'asesor'},
-          {label:'↩️ Volver al menú', next:'inicio'},
+          {label:'📩 Contactar asesor', next:'asesor'},
+          {label:'🏠 Menú principal', next:'inicio'},
         ]), 200);
       });
     }
@@ -319,18 +289,22 @@
     minBtn.style.display = 'none';
     if(!started){
       started = true;
-      setTimeout(() => goFlow('inicio'), 600);
+      setTimeout(() => goFlow('inicio'), 400);
     }
     inp.focus();
   }
 
-  // Arrancar automáticamente
+  // Iniciar abierto
   if(!started){
     started = true;
-    setTimeout(() => goFlow('inicio'), 600);
+    setTimeout(() => goFlow('inicio'), 500);
   }
 
   inp.addEventListener('keydown', e => { if(e.key === 'Enter') handleInput(); });
 
-  window.eiabot = { minimize, expand, handleInput };
+  window.eiabot = {
+    minimize,
+    expand,
+    handleInput
+  };
 })();
