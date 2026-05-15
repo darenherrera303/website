@@ -1,24 +1,21 @@
 /* =============================================
-   Kay · Asistente EIATEC — Estilos encapsulados
-   (inyectado en Wix Body-End)
+   Kay · Asistente Virtual de EIATEC (v3 Premium)
+   Encapsulado para widget flotante en Wix
    ============================================= */
-
-/* Variables (solo las usan los bloques del widget) */
 :root{
-  --kay-g:#2C6957;
-  --kay-lime:#62B455;
-  --kay-gold:#EAAD26;
-  --kay-bg:#f0f5f2;
-  --kay-w:#fff;
-  --kay-t1:#1a2e24;
-  --kay-t2:#4a6a5a;
-  --kay-t3:#8aaa98;
-  --kay-bd:rgba(44,105,87,.13);
+  --g:#2C6957;
+  --lime:#62B455;
+  --gold:#EAAD26;
+  --bg:#f0f5f2;
+  --w:#fff;
+  --t1:#1a2e24;
+  --t2:#4a6a5a;
+  --t3:#8aaa98;
+  --bd:rgba(44,105,87,.13)
 }
 
-/* ── Reset interno SOLO para el chatbot ── */
-#eiabot-chat *,
-#eiabot-min *{
+/* ── RESET SOLO DENTRO DEL WIDGET ── */
+#eiabot-chat *, #eiabot-min *{
   box-sizing:border-box;
   margin:0;
   padding:0;
@@ -29,7 +26,7 @@
   position:fixed;
   bottom:20px;right:20px;
   z-index:999999;
-  background:linear-gradient(135deg,var(--kay-g),#1a4d38);
+  background:linear-gradient(135deg,var(--g),#1a4d38);
   color:#fff;
   padding:10px 18px;
   border-radius:30px;
@@ -79,21 +76,19 @@
 
 /* ── CABECERA ── */
 #eiabot-chat .eiabot-ch{
-  background:linear-gradient(135deg,#1a4d38,var(--kay-g));
+  background:linear-gradient(135deg,#1a4d38,var(--g));
   padding:14px 16px;
   display:flex;align-items:center;gap:10px;
   flex-shrink:0;
-  position:relative;
-  overflow:hidden;
+  position:relative;overflow:hidden;
 }
 #eiabot-chat .eiabot-ch::after{
   content:'';
-  position:absolute;
-  top:-30px;right:-30px;
+  position:absolute;top:-30px;right:-30px;
   width:80px;height:80px;
   background:rgba(255,255,255,.05);
   border-radius:50%;
-  animation: kayFloatBlob 8s infinite ease-in-out;
+  animation:kayFloatBlob 8s infinite ease-in-out;
 }
 @keyframes kayFloatBlob{
   0%,100%{transform:translate(0,0) scale(1)}
@@ -106,19 +101,15 @@
   flex-shrink:0;
   background:rgba(255,255,255,.15);
   display:flex;align-items:center;justify-content:center;
-  animation: kayPulseAvatar 2s infinite;
+  animation:kayPulseAvatar 2s infinite;
 }
 @keyframes kayPulseAvatar{
   0%{box-shadow:0 0 0 0 rgba(255,255,255,.4)}
   70%{box-shadow:0 0 0 8px rgba(255,255,255,0)}
   100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}
 }
-#eiabot-chat .eiabot-ch-av img{
-  width:100%;height:100%;object-fit:cover;
-}
-#eiabot-chat .eiabot-ch-t{
-  flex:1;z-index:1;
-}
+#eiabot-chat .eiabot-ch-av img{width:100%;height:100%;object-fit:cover}
+#eiabot-chat .eiabot-ch-t{flex:1;z-index:1}
 #eiabot-chat .eiabot-ch-t b{
   display:block;font-size:.82rem;font-weight:800;
   color:#fff;letter-spacing:.02em;
@@ -130,10 +121,10 @@
 #eiabot-chat .eiabot-ch-t span::before{
   content:'';
   width:8px;height:8px;border-radius:50%;
-  background:var(--kay-lime);
+  background:#62B455;
   display:inline-block;
-  box-shadow:0 0 8px var(--kay-lime);
-  animation: kayOnlinePulse 1.5s infinite;
+  box-shadow:0 0 8px #62B455;
+  animation:kayOnlinePulse 1.5s infinite;
 }
 @keyframes kayOnlinePulse{
   0%,100%{opacity:1;transform:scale(1)}
@@ -148,13 +139,12 @@
   transition:all .2s;
 }
 #eiabot-chat .eiabot-ch-min:hover{
-  background:rgba(255,255,255,.2);
-  color:#fff;
+  background:rgba(255,255,255,.2);color:#fff;
   transform:rotate(90deg);
 }
 
 /* ── CUERPO DE MENSAJES ── */
-#eiabot-chat #eiabot-msgs{
+#eiabot-msgs{
   flex:1;overflow-y:auto;
   padding:14px 13px;
   display:flex;flex-direction:column;gap:9px;
@@ -162,11 +152,11 @@
   max-height:50vh;
   background:rgba(255,255,255,0.4);
 }
-#eiabot-chat #eiabot-msgs::-webkit-scrollbar{width:4px}
-#eiabot-chat #eiabot-msgs::-webkit-scrollbar-thumb{
+#eiabot-msgs::-webkit-scrollbar{width:4px}
+#eiabot-msgs::-webkit-scrollbar-thumb{
   background:rgba(44,105,87,.2);border-radius:4px;
 }
-#eiabot-chat #eiabot-msgs::-webkit-scrollbar-track{background:transparent}
+#eiabot-msgs::-webkit-scrollbar-track{background:transparent}
 
 /* Burbuja del bot */
 #eiabot-chat .eiabot-bm{
@@ -180,20 +170,18 @@
 #eiabot-chat .eiabot-bm-av{
   width:28px;height:28px;border-radius:50%;overflow:hidden;
   flex-shrink:0;
-  background:linear-gradient(135deg,var(--kay-g),var(--kay-lime));
+  background:linear-gradient(135deg,var(--g),var(--lime));
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 2px 8px rgba(44,105,87,.2);
 }
-#eiabot-chat .eiabot-bm-av img{
-  width:100%;height:100%;object-fit:cover;
-}
+#eiabot-chat .eiabot-bm-av img{width:100%;height:100%;object-fit:cover}
 #eiabot-chat .eiabot-bm-bub{
   background:rgba(248,251,249,0.9);
   backdrop-filter:blur(4px);
   border:1px solid rgba(44,105,87,.08);
   padding:9px 13px;
   border-radius:16px 16px 16px 4px;
-  font-size:.73rem;color:var(--kay-t1);line-height:1.6;
+  font-size:.73rem;color:var(--t1);line-height:1.6;
   max-width:82%;
   box-shadow:0 2px 6px rgba(44,105,87,.04);
   position:relative;
@@ -213,8 +201,7 @@
   animation:kayMsgIn .3s ease;
 }
 #eiabot-chat .eiabot-um-bub{
-  background:var(--kay-g);
-  color:#fff;
+  background:var(--g);color:#fff;
   padding:9px 13px;
   border-radius:16px 16px 4px 16px;
   font-size:.73rem;line-height:1.6;
@@ -229,27 +216,23 @@
   animation:kayMsgIn .35s ease;
 }
 #eiabot-chat .eiabot-opt{
-  background:var(--kay-w);
+  background:var(--w);
   border:1.5px solid rgba(44,105,87,.18);
-  color:var(--kay-g);
-  padding:6px 13px;
+  color:var(--g);padding:6px 13px;
   border-radius:20px;
   font-size:.66rem;font-weight:700;
   cursor:pointer;
   transition:all .22s;
-  font-family:'Century Gothic',CenturyGothic,sans-serif;
+  font-family:inherit;text-align:left;
   box-shadow:0 2px 6px rgba(44,105,87,.06);
 }
 #eiabot-chat .eiabot-opt:hover{
-  background:var(--kay-g);
-  color:#fff;
-  border-color:var(--kay-g);
+  background:var(--g);color:#fff;
+  border-color:var(--g);
   transform:translateY(-2px);
   box-shadow:0 6px 14px rgba(44,105,87,.25);
 }
-#eiabot-chat .eiabot-opt:active{
-  transform:translateY(0);
-}
+#eiabot-chat .eiabot-opt:active{transform:translateY(0)}
 
 /* ── INDICADOR DE ESCRITURA ── */
 #eiabot-chat .eiabot-typing{
@@ -266,7 +249,7 @@
 }
 #eiabot-chat .eiabot-td{
   width:7px;height:7px;border-radius:50%;
-  background:var(--kay-t3);
+  background:var(--t3);
   animation:kayTd .9s infinite ease-in-out;
 }
 #eiabot-chat .eiabot-td:nth-child(2){animation-delay:.2s}
@@ -289,43 +272,42 @@
 }
 #eiabot-chat .eiabot-form label{
   font-size:.68rem;font-weight:700;
-  color:var(--kay-t2);
+  color:var(--t2);
   margin-bottom:-6px;
-}
-#eiabot-chat .eiabot-form .input-icon{
-  position:relative;
-}
-#eiabot-chat .eiabot-form .input-icon i{
-  position:absolute;left:12px;top:50%;
-  transform:translateY(-50%);
-  color:var(--kay-t3);font-size:.75rem;
 }
 #eiabot-chat .eiabot-form input,
 #eiabot-chat .eiabot-form textarea{
   width:100%;
   padding:9px 12px 9px 36px;
   border-radius:12px;
-  border:1.5px solid var(--kay-bd);
-  font-family:'Century Gothic',CenturyGothic,sans-serif;
-  font-size:.72rem;
-  background:#fff;
-  color:var(--kay-t1);
+  border:1.5px solid var(--bd);
+  font-family:inherit;font-size:.72rem;
+  background:#f9fbfa;color:var(--t1);
   outline:none;
   transition:border .2s,box-shadow .2s;
 }
 #eiabot-chat .eiabot-form input:focus,
 #eiabot-chat .eiabot-form textarea:focus{
-  border-color:var(--kay-g);
+  border-color:var(--g);
   box-shadow:0 0 0 3px rgba(44,105,87,.1);
 }
 #eiabot-chat .eiabot-form textarea{
-  min-height:60px;
-  resize:vertical;
+  min-height:60px;resize:vertical;
+}
+#eiabot-chat .eiabot-form .input-icon{position:relative}
+#eiabot-chat .eiabot-form .input-icon i{
+  position:absolute;left:12px;top:50%;
+  transform:translateY(-50%);
+  color:var(--t3);font-size:.75rem;
+}
+#eiabot-chat .eiabot-form .input-icon textarea ~ i{
+  top:14px;transform:none;
 }
 #eiabot-chat .eiabot-form .btn-row{
   display:flex;gap:8px;margin-top:4px;
 }
-#eiabot-chat .eiabot-form .btn-row button{
+#eiabot-chat .btn-wa,
+#eiabot-chat .btn-email{
   flex:1;padding:10px 6px;
   border-radius:14px;border:none;
   font-weight:700;font-size:.7rem;
@@ -337,63 +319,49 @@
   background:#25D366;color:#fff;
   box-shadow:0 4px 12px rgba(37,211,102,.25);
 }
-#eiabot-chat .btn-wa:hover{
-  background:#1da851;
-  transform:scale(1.02);
-}
+#eiabot-chat .btn-wa:hover{background:#1da851;transform:scale(1.02)}
 #eiabot-chat .btn-email{
-  background:var(--kay-g);color:#fff;
+  background:var(--g);color:#fff;
   box-shadow:0 4px 12px rgba(44,105,87,.25);
 }
-#eiabot-chat .btn-email:hover{
-  background:var(--kay-lime);
-  transform:scale(1.02);
-}
+#eiabot-chat .btn-email:hover{background:var(--lime);transform:scale(1.02)}
 
 /* ── INPUT DE TEXTO ── */
 #eiabot-chat .eiabot-ci{
-  border-top:1px solid var(--kay-bd);
+  border-top:1px solid var(--bd);
   padding:10px 12px;
   display:flex;gap:7px;
   flex-shrink:0;
   background:rgba(255,255,255,0.85);
 }
 #eiabot-chat .eiabot-ci input{
-  flex:1;
-  padding:8px 13px;
+  flex:1;padding:8px 13px;
   border-radius:20px;
-  border:1.5px solid var(--kay-bd);
-  background:var(--kay-w);
-  font-family:'Century Gothic',CenturyGothic,sans-serif;
-  font-size:.73rem;
-  color:var(--kay-t1);
-  outline:none;
-  transition:border-color .2s,box-shadow .2s;
+  border:1.5px solid var(--bd);
+  background:#f8fbf9;
+  font-family:inherit;font-size:.73rem;color:var(--t1);
+  outline:none;transition:border-color .2s,box-shadow .2s;
 }
 #eiabot-chat .eiabot-ci input:focus{
-  border-color:var(--kay-g);
+  border-color:var(--g);
   box-shadow:0 0 0 3px rgba(44,105,87,.08);
 }
 #eiabot-chat .eiabot-ci-send{
   width:34px;height:34px;
   border-radius:50%;border:none;
-  background:var(--kay-g);
-  color:#fff;
+  background:var(--g);color:#fff;
   cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  font-size:.72rem;
-  transition:all .22s;
+  font-size:.72rem;transition:all .22s;
   flex-shrink:0;
   box-shadow:0 4px 12px rgba(44,105,87,.3);
   position:relative;
 }
 #eiabot-chat .eiabot-ci-send:hover{
-  background:var(--kay-lime);
-  transform:scale(1.07);
+  background:var(--lime);transform:scale(1.07);
 }
 #eiabot-chat .eiabot-ci-send:active::after{
-  content:'✨';
-  position:absolute;
+  content:'✨';position:absolute;
   font-size:1rem;
   top:-8px;right:-5px;
   animation:kaySpark .5s ease-out;
@@ -405,11 +373,6 @@
 
 /* ── RESPONSIVE ── */
 @media(max-width:600px){
-  #eiabot-chat{
-    right:10px;bottom:10px;
-    width:calc(100vw - 20px);
-  }
-  #eiabot-min{
-    right:10px;bottom:10px;
-  }
+  #eiabot-chat{right:10px;bottom:10px;width:calc(100vw - 20px)}
+  #eiabot-min{right:10px;bottom:10px}
 }

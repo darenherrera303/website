@@ -1,4 +1,7 @@
 (function(){
+  /* =============================================
+     Kay · Asistente Virtual de EIATEC
+     ============================================= */
   const KAY_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
 
   const CFG = {
@@ -185,6 +188,7 @@
     msgs.appendChild(formEl);
     scroll();
 
+    // Lógica para WhatsApp
     document.getElementById('eiabot-fwa').onclick = () => {
       const data = getFormData(area);
       if(!data.name) {
@@ -192,14 +196,15 @@
         return;
       }
       const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
-      const body = `Hola Kai, soy ${data.name}.${data.email ? ' Email: '+data.email+'.' : ''} Asunto: ${data.subject}.${data.msg ? ' Mensaje: '+data.msg : ''}`;
+      const body = `Hola Kay, soy ${data.name}.${data.email ? ' Email: '+data.email+'.' : ''} Asunto: ${data.subject}.${data.msg ? ' Mensaje: '+data.msg : ''}`;
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
       window.open(url, '_blank');
       formEl.remove();
-      addBot('¡Gracias! He abierto WhatsApp con tu consulta.');
+      addBot('¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
       askAgain();
     };
 
+    // Lógica para Correo
     document.getElementById('eiabot-femailbtn').onclick = () => {
       const data = getFormData(area);
       if(!data.name) {
@@ -211,7 +216,7 @@
       const body = encodeURIComponent(`Hola Kay,\n\nSoy ${data.name}.${data.email ? ' Mi correo es: '+data.email+'.' : ''}\n\n${data.msg ? 'Mensaje: '+data.msg : ''}\n\nSaludos.`);
       window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
       formEl.remove();
-      addBot('¡Listo! He preparado un correo para que lo envíes.');
+      addBot('¡Listo! He preparado un correo para que lo envíes. Solo revisa y haz clic en enviar.');
       askAgain();
     };
   }
@@ -235,6 +240,7 @@
     return subjects[area] || 'Consulta';
   }
 
+  /* ── PREGUNTA FINAL ── */
   function askAgain(){
     setTimeout(() => {
       addBot('¿Necesitas ayuda con algo más?');
@@ -250,12 +256,25 @@
     }, 800);
   }
 
+  /* ── ENTRADA DE TEXTO (mejora: reconoce saludos y despedidas) ── */
   function handleInput(){
     const v = inp.value.trim();
     if(!v) return;
     inp.value = '';
     addUser(v);
     const lv = v.toLowerCase();
+
+    if(/^(hola|buenos días|buenas tardes|hey|saludos|buenas)/i.test(lv)) {
+      addBot('¡Hola! 😊 ¿En qué puedo ayudarte?');
+      goFlow('inicio');
+      return;
+    }
+    if(/^(adiós|chao|bye|gracias|muchas gracias|nos vemos)/i.test(lv)) {
+      addBot('¡Gracias a ti! 🤗 Estoy aquí cuando me necesites.');
+      setTimeout(() => minimize(), 2500);
+      return;
+    }
+
     if(/servicio|eia|impacto|ambiental/.test(lv)) showTyping(()=>goFlow('servicios'));
     else if(/proyecto|trabajo|referencia/.test(lv)) showTyping(()=>goFlow('proyectos'));
     else if(/horario|hora/.test(lv)) showTyping(()=>goFlow('horarios'));
@@ -287,6 +306,7 @@
     inp.focus();
   }
 
+  // Iniciar abierto
   if(!started){
     started = true;
     setTimeout(() => goFlow('inicio'), 500);
@@ -294,5 +314,9 @@
 
   inp.addEventListener('keydown', e => { if(e.key === 'Enter') handleInput(); });
 
-  window.eiabot = { minimize, expand, handleInput };
+  window.eiabot = {
+    minimize,
+    expand,
+    handleInput
+  };
 })();
