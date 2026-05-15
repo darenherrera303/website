@@ -4,6 +4,15 @@
      ============================================= */
   const KAY_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
 
+  // Endpoints de Formspree por área (reemplaza con tus IDs reales)
+  const FORMSPREE = {
+    comercial:       'https://formspree.io/f/TU_FORM_ID_COMERCIAL',
+    gestionhumana:   'https://formspree.io/f/TU_FORM_ID_GESTION_HUMANA',
+    hseq:            'https://formspree.io/f/TU_FORM_ID_HSEQ',
+    gerenciatecnica: 'https://formspree.io/f/TU_FORM_ID_TECNICA',
+    general:         'https://formspree.io/f/TU_FORM_ID_GENERAL',
+  };
+
   const CFG = {
     whatsapp: {
       comercial:       '573000000001',
@@ -154,7 +163,7 @@
     currentFlow = key;
   }
 
-  /* ── FORMULARIO MEJORADO ── */
+  /* ── FORMULARIO MEJORADO CON ENVÍO DIRECTO ── */
   function showForm(area){
     const formEl = document.createElement('div');
     formEl.className = 'eiabot-form';
@@ -181,52 +190,78 @@
         <textarea id="eiabot-fmsg" placeholder="Cuéntanos tu consulta..."></textarea>
       </div>
       <div class="btn-row">
+        <button class="btn-email" id="eiabot-fsend"><i class="fas fa-paper-plane"></i> Enviar mensaje</button>
         <button class="btn-wa" id="eiabot-fwa"><i class="fab fa-whatsapp"></i> WhatsApp</button>
-        <button class="btn-email" id="eiabot-femailbtn"><i class="fas fa-envelope"></i> Correo</button>
       </div>
     `;
     msgs.appendChild(formEl);
     scroll();
 
-    // Lógica para WhatsApp
+    // Enviar por correo (Formspree)
+    document.getElementById('eiabot-fsend').onclick = async () => {
+      const name    = document.getElementById('eiabot-fname').value.trim();
+      const email   = document.getElementById('eiabot-femail').value.trim();
+      const subject = document.getElementById('eiabot-fsubject').value.trim();
+      const msg     = document.getElementById('eiabot-fmsg').value.trim();
+
+      if(!name){
+        alert('Por favor ingresa tu nombre.');
+        return;
+      }
+
+      const btn = document.getElementById('eiabot-fsend');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+      try {
+        const endpoint = FORMSPREE[area] || FORMSPREE.general;
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nombre: name,
+            email: email,
+            asunto: subject,
+            mensaje: msg,
+            area: area,
+            _subject: `Nueva consulta Kay: ${subject}`
+          })
+        });
+
+        if(response.ok){
+          formEl.remove();
+          addBot('✅ ¡Mensaje enviado con éxito! Te responderemos pronto.');
+        } else {
+          throw new Error('Error en el envío');
+        }
+      } catch(error){
+        addBot('❌ Hubo un problema al enviar. Por favor intenta de nuevo o usa WhatsApp.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar mensaje';
+      }
+
+      askAgain();
+    };
+
+    // Enviar por WhatsApp (alternativa)
     document.getElementById('eiabot-fwa').onclick = () => {
-      const data = getFormData(area);
-      if(!data.name) {
+      const name    = document.getElementById('eiabot-fname').value.trim();
+      const email   = document.getElementById('eiabot-femail').value.trim();
+      const subject = document.getElementById('eiabot-fsubject').value.trim();
+      const msg     = document.getElementById('eiabot-fmsg').value.trim();
+
+      if(!name){
         alert('Por favor ingresa tu nombre.');
         return;
       }
       const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
-      const body = `Hola Kay, soy ${data.name}.${data.email ? ' Email: '+data.email+'.' : ''} Asunto: ${data.subject}.${data.msg ? ' Mensaje: '+data.msg : ''}`;
+      const body = `Hola Kay, soy ${name}.${email ? ' Email: '+email+'.' : ''} Asunto: ${subject}.${msg ? ' Mensaje: '+msg : ''}`;
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
       open(url, '_blank');
       formEl.remove();
-      addBot('¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
+      addBot('📱 He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
       askAgain();
     };
-
-    // Lógica para Correo
-    document.getElementById('eiabot-femailbtn').onclick = () => {
-      const data = getFormData(area);
-      if(!data.name) {
-        alert('Por favor ingresa tu nombre.');
-        return;
-      }
-      const to = CFG.emails[area] || CFG.emails.comercial;
-      const subject = encodeURIComponent(data.subject);
-      const body = encodeURIComponent(`Hola Kay,\n\nSoy ${data.name}.${data.email ? ' Mi correo es: '+data.email+'.' : ''}\n\n${data.msg ? 'Mensaje: '+data.msg : ''}\n\nSaludos.`);
-      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
-      formEl.remove();
-      addBot('¡Listo! He preparado un correo para que lo envíes. Solo revisa y haz clic en enviar.');
-      askAgain();
-    };
-  }
-
-  function getFormData(area){
-    const name    = document.getElementById('eiabot-fname')?.value.trim() || '';
-    const email   = document.getElementById('eiabot-femail')?.value.trim() || '';
-    const subject = document.getElementById('eiabot-fsubject')?.value.trim() || getDefaultSubject(area);
-    const msg     = document.getElementById('eiabot-fmsg')?.value.trim() || '';
-    return { name, email, subject, msg };
   }
 
   function getDefaultSubject(area){
@@ -294,7 +329,6 @@
     inp.focus();
   }
 
-  // Iniciar abierto
   if(!started){
     started = true;
     setTimeout(() => goFlow('inicio'), 500);
