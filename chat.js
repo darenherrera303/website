@@ -1,6 +1,6 @@
 (function(){
   /* =============================================
-     Kay · Asistente Virtual de EIATEC
+     Kay · Asistente Virtual de EIATEC (v2 Mejorado)
      ============================================= */
   const KAY_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
 
@@ -13,11 +13,11 @@
       general:         '573001234567',
     },
     pages: {
-      servicios: 'https://www.eiatec.com.co/servicios',
-      proyectos: 'https://www.eiatec.com.co/proyectos',
-      nosotros:  'https://www.eiatec.com.co/nosotros',
-      contacto:  'https://www.eiatec.com.co/contacto',
-      blog:      'https://www.eiatec.com.co/blog',
+      servicios: 'https://www.eiatec.com/servicios',
+      proyectos: 'https://www.eiatec.com/proyectos',
+      nosotros:  'https://www.eiatec.com/nosotros',
+      contacto:  'https://www.eiatec.com/contacto',
+      blog:      'https://www.eiatec.com/blog',
     },
     emails: {
       comercial:       'comercial@eiatec.com',
@@ -29,7 +29,7 @@
 
   const FLOWS = {
     inicio: {
-      msg: '¡Hola! 👋 Soy <strong>Kai</strong>, tu asistente virtual de eiatec.<br>¿En qué puedo ayudarte hoy?',
+      msg: '¡Hola! 👋 Soy <strong>Kay</strong>, tu asistente virtual de eiatec.<br>¿En qué puedo ayudarte hoy?',
       opts: [
         {label:'📋 Servicios', next:'servicios'},
         {label:'🗂️ Proyectos', next:'proyectos'},
@@ -41,23 +41,23 @@
     servicios: {
       msg:'Ofrecemos servicios en:<br>• Estudios de Impacto Ambiental (EIA)<br>• Consulta Previa<br>• Gestión Hídrica<br>• Flora, Fauna y Biodiversidad<br>• Energía Renovable<br>• Arqueología<br>• Sostenibilidad Empresarial<br>• Logística Ambiental<br>¿Deseas más detalle?',
       opts:[
-        {label:'🔗 Ver servicios', action:()=>open(CFG.pages.servicios,'_top')},
+        {label:'🔗 Ver servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
         {label:'📩 Consultar', next:'asesor'},
-        {label:'🏠 Inicio', next:'inicio'},
+        {label:'↩️ Volver', next:'inicio'},
       ]
     },
     proyectos: {
       msg:'Hemos realizado más de 30 proyectos en Colombia.',
       opts:[
-        {label:'🔗 Ver proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
-        {label:'🏠 Inicio', next:'inicio'},
+        {label:'🔗 Ver proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
+        {label:'↩️ Volver', next:'inicio'},
       ]
     },
     horarios: {
       msg:'🕐 <strong>Horarios de atención:</strong><br><br>📅 Lunes a Viernes<br>⏰ 8:00 am – 6:00 pm<br><br>📞 Teléfonos: (1) 704 2362 / (1) 245 0961<br>📍 Bogotá D.C.',
       opts:[
         {label:'📩 Contactar', next:'asesor'},
-        {label:'🏠 Inicio', next:'inicio'},
+        {label:'↩️ Volver', next:'inicio'},
       ]
     },
     asesor: {
@@ -78,11 +78,11 @@
     web: {
       msg:'¿A qué sección deseas ir?',
       opts:[
-        {label:'⚙️ Servicios', action:()=>open(CFG.pages.servicios,'_top')},
-        {label:'📁 Proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
-        {label:'🏢 Nosotros',  action:()=>open(CFG.pages.nosotros,'_top')},
-        {label:'✉️ Contacto',  action:()=>open(CFG.pages.contacto,'_top')},
-        {label:'📰 Blog',      action:()=>open(CFG.pages.blog,'_top')},
+        {label:'⚙️ Servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
+        {label:'📁 Proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
+        {label:'🏢 Nosotros',  action:()=>window.open(CFG.pages.nosotros,'_top')},
+        {label:'✉️ Contacto',  action:()=>window.open(CFG.pages.contacto,'_top')},
+        {label:'📰 Blog',      action:()=>window.open(CFG.pages.blog,'_top')},
         {label:'🏠 Inicio',    next:'inicio'},
       ]
     },
@@ -188,7 +188,6 @@
     msgs.appendChild(formEl);
     scroll();
 
-    // Lógica para WhatsApp
     document.getElementById('eiabot-fwa').onclick = () => {
       const data = getFormData(area);
       if(!data.name) {
@@ -198,13 +197,12 @@
       const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
       const body = `Hola Kay, soy ${data.name}.${data.email ? ' Email: '+data.email+'.' : ''} Asunto: ${data.subject}.${data.msg ? ' Mensaje: '+data.msg : ''}`;
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
-      open(url, '_blank');
+      window.open(url, '_blank');
       formEl.remove();
-      addBot('¡Gracias! He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
+      addBot('¡Gracias! He abierto WhatsApp con tu consulta.');
       askAgain();
     };
 
-    // Lógica para Correo
     document.getElementById('eiabot-femailbtn').onclick = () => {
       const data = getFormData(area);
       if(!data.name) {
@@ -216,7 +214,7 @@
       const body = encodeURIComponent(`Hola Kay,\n\nSoy ${data.name}.${data.email ? ' Mi correo es: '+data.email+'.' : ''}\n\n${data.msg ? 'Mensaje: '+data.msg : ''}\n\nSaludos.`);
       window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
       formEl.remove();
-      addBot('¡Listo! He preparado un correo para que lo envíes. Solo revisa y haz clic en enviar.');
+      addBot('¡Listo! He preparado un correo para que lo envíes.');
       askAgain();
     };
   }
@@ -256,13 +254,25 @@
     }, 800);
   }
 
-  /* ── ENTRADA DE TEXTO ── */
+  /* ── ENTRADA DE TEXTO NATURAL ── */
   function handleInput(){
     const v = inp.value.trim();
     if(!v) return;
     inp.value = '';
     addUser(v);
     const lv = v.toLowerCase();
+
+    if(/hola|buenos días|buenas tardes|hey/i.test(lv)){
+      addBot('¡Hola! 😊 ¿En qué puedo ayudarte?');
+      goFlow('inicio');
+      return;
+    }
+    if(/adiós|chao|gracias|bye/i.test(lv)){
+      addBot('¡Hasta luego! 👋 Estoy aquí cuando me necesites.');
+      setTimeout(() => minimize(), 2500);
+      return;
+    }
+
     if(/servicio|eia|impacto|ambiental/.test(lv)) showTyping(()=>goFlow('servicios'));
     else if(/proyecto|trabajo|referencia/.test(lv)) showTyping(()=>goFlow('proyectos'));
     else if(/horario|hora/.test(lv)) showTyping(()=>goFlow('horarios'));
@@ -294,7 +304,6 @@
     inp.focus();
   }
 
-  // Iniciar abierto
   if(!started){
     started = true;
     setTimeout(() => goFlow('inicio'), 500);
