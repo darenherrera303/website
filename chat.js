@@ -2,15 +2,15 @@
   /* =============================================
      Kay · Asistente Virtual de EIATEC
      ============================================= */
-  const KAY_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
+  const KAi_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
 
   // Endpoints de Formspree por área (reemplaza con tus IDs reales)
   const FORMSPREE = {
-    comercial:       'https://formspree.io/f/TU_FORM_ID_COMERCIAL',
-    gestionhumana:   'https://formspree.io/f/TU_FORM_ID_GESTION_HUMANA',
-    hseq:            'https://formspree.io/f/TU_FORM_ID_HSEQ',
-    gerenciatecnica: 'https://formspree.io/f/TU_FORM_ID_TECNICA',
-    general:         'https://formspree.io/f/TU_FORM_ID_GENERAL',
+    comercial:       'https://formspree.io/f/form2',
+    gestionhumana:   'https://formspree.io/f/form2',
+    hseq:            'https://formspree.io/f/form2',
+    gerenciatecnica: 'https://formspree.io/f/form2',
+    general:         'https://formspree.io/f/form2',
   };
 
   const CFG = {
@@ -22,11 +22,11 @@
       general:         '573001234567',
     },
     pages: {
-      servicios: 'https://www.eiatec.com.co/servicios',
-      proyectos: 'https://www.eiatec.com.co/proyectos',
-      nosotros:  'https://www.eiatec.com.co/nosotros',
-      contacto:  'https://www.eiatec.com.co/contacto',
-      blog:      'https://www.eiatec.com.co/blog',
+      servicios: 'https://www.eiatec.com/servicios',
+      proyectos: 'https://www.eiatec.com/proyectos',
+      nosotros:  'https://www.eiatec.com/nosotros',
+      contacto:  'https://www.eiatec.com/contacto',
+      blog:      'https://www.eiatec.com/blog',
     },
     emails: {
       comercial:       'comercial@eiatec.com',
@@ -38,7 +38,7 @@
 
   const FLOWS = {
     inicio: {
-      msg: '¡Hola! 👋 Soy <strong>Kay</strong>, tu asistente virtual de EIATEC.<br>¿En qué puedo ayudarte hoy?',
+      msg: '¡Hola! 👋 Soy <strong>Kai</strong>, tu asistente virtual de eiatec.<br>¿En qué puedo ayudarte hoy?',
       opts: [
         {label:'📋 Servicios', next:'servicios'},
         {label:'🗂️ Proyectos', next:'proyectos'},
