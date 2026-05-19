@@ -1,6 +1,6 @@
 (function(){
   /* =============================================
-     Kai · Asistente Virtual de EIATEC (v5 · Motor robusto)
+     Kai · Asistente Virtual de EIATEC (v6 · Motor ultra‑robusto)
      ============================================= */
   const KAI_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
 
@@ -33,6 +33,9 @@
       gestionhumana:   'gestionhumana@eiatec.com',
       hseq:            'hseq@eiatec.com',
       gerenciatecnica: 'gerenciatecnica@eiatec.com',
+      juridica:        'gestionjuridica@eiatec.com',
+      compras:         'compras@eiatec.com',
+      contabilidad:    'contabilidad@eiatec.com',
     }
   };
 
@@ -77,27 +80,39 @@
         {label:'🛡️ HSEQ',      next:'form_hseq'},
         {label:'🔧 Técnica',   next:'form_tecnica'},
         {label:'👥 RR.HH.',    next:'form_rrhh'},
+        {label:'⚖️ Jurídica',  next:'form_juridica'},
+        {label:'💰 Compras/Contabilidad', next:'form_compras'},
         {label:'📦 Otra',      next:'form_otra'},
       ]
     },
-    form_comercial:  { type:'form', area:'comercial' },
-    form_hseq:       { type:'form', area:'hseq' },
-    form_tecnica:    { type:'form', area:'gerenciatecnica' },
-    form_rrhh:       { type:'form', area:'gestionhumana' },
-    form_otra:       { type:'form', area:'general' },
-    web: {
-      msg:'¿A qué sección deseas ir?',
+    // ── Formularios por área ──
+    form_comercial:  { type:'form', area:'comercial', subject:'Consulta Comercial' },
+    form_hseq:       { type:'form', area:'hseq', subject:'Consulta HSEQ' },
+    form_tecnica:    { type:'form', area:'gerenciatecnica', subject:'Consulta Técnica' },
+    form_rrhh:       { type:'form', area:'gestionhumana', subject:'Consulta Gestión Humana' },
+    form_juridica:   { type:'form', area:'juridica', subject:'Consulta Jurídica' },
+    form_compras:    { type:'form', area:'compras', subject:'Consulta Compras/Contabilidad' },
+    form_otra:       { type:'form', area:'general', subject:'Consulta General' },
+
+    // ── Flujos específicos (derivados automáticamente) ──
+    pqr: {
+      msg: 'Para radicar una PQR (Petición, Queja, Reclamo) puedes comunicarte directamente con el área <strong>HSEQ</strong> o llenar el formulario a continuación.<br>También puedes llamar al (1) 704 2362.',
       opts:[
-        {label:'⚙️ Servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
-        {label:'📁 Proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
-        {label:'🏢 Nosotros',  action:()=>window.open(CFG.pages.nosotros,'_top')},
-        {label:'✉️ Contacto',  action:()=>window.open(CFG.pages.contacto,'_top')},
-        {label:'📰 Blog',      action:()=>window.open(CFG.pages.blog,'_top')},
-        {label:'🏠 Inicio',    next:'inicio'},
+        {label:'📩 Formulario HSEQ', next:'form_hseq'},
+        {label:'📞 Llamar', action:()=>window.open('tel:+5717042362','_self')},
+        {label:'🏠 Inicio', next:'inicio'},
+      ]
+    },
+    cotizacion: {
+      msg: 'Para solicitar una cotización o propuesta técnica, el área <strong>Comercial</strong> es la indicada. ¿Te comunico con ellos?',
+      opts:[
+        {label:'📩 Formulario Comercial', next:'form_comercial'},
+        {label:'💬 WhatsApp Comercial', action:()=>window.open(`https://wa.me/${CFG.whatsapp.comercial}`,'_blank')},
+        {label:'🏠 Inicio', next:'inicio'},
       ]
     },
     empleo: {
-      msg: 'Si deseas trabajar con nosotros, visita nuestra sección de <strong>Talento Humano</strong> en la página web o envía tu hoja de vida a:<br><br>✉️ gestionhumana@eiatec.com<br><br>¿Te gustaría contactar directamente con esa área?',
+      msg: 'Si deseas trabajar con nosotros, envía tu hoja de vida a <strong>gestionhumana@eiatec.com</strong> o visita la sección de Talento Humano en la web.',
       opts:[
         {label:'📩 Contactar RR.HH.', next:'form_rrhh'},
         {label:'🌐 Ir a la web', action:()=>window.open(CFG.pages.nosotros,'_top')},
@@ -105,7 +120,7 @@
       ]
     },
     sobre_nosotros: {
-      msg:'EIATEC es una empresa líder en consultoría ambiental, con más de 22 años de experiencia y presencia en toda Colombia. Especialistas en licenciamiento, biodiversidad, sostenibilidad y mucho más.',
+      msg:'EIATEC es una empresa líder en consultoría ambiental, con más de 22 años de experiencia y presencia en toda Colombia.',
       opts:[
         {label:'🌐 Ir a Nosotros', action:()=>window.open(CFG.pages.nosotros,'_top')},
         {label:'🏠 Inicio', next:'inicio'},
@@ -124,18 +139,29 @@
 
   // ── Motor de intenciones (reglas ordenadas) ──
   const INTENTS = [
-    // [prioridad implícita: se evalúan en este orden]
-    { pattern: /\b(servicio|eia|impacto|ambiental|consultoría)\b/i,   flow: 'servicios' },
-    { pattern: /\b(proyecto|portafolio|experiencia|cliente)\b/i,       flow: 'proyectos' },
-    { pattern: /\b(horario|hora|atencion|abierto|cuándo)\b/i,          flow: 'horarios' },
+    // PQR
+    { pattern: /\b(pqr|petición|queja|reclamo|radicar|sugerencia)\b/i, flow: 'pqr' },
+    // Cotización / propuesta
+    { pattern: /\b(cotización|cotizar|propuesta|presupuesto|tarifa|precio|valor)\b/i, flow: 'cotizacion' },
+    // Empleo
+    { pattern: /\b(empleo|trabajo|vacante|hoja de vida|cargo|reclutamiento|contratación)\b/i, flow: 'empleo' },
+    // Servicios
+    { pattern: /\b(servicio|eia|impacto ambiental|consultoría|asesoría|estudio ambiental)\b/i, flow: 'servicios' },
+    // Proyectos
+    { pattern: /\b(proyecto|portafolio|experiencia|cliente)\b/i, flow: 'proyectos' },
+    // Horarios
+    { pattern: /\b(horario|hora|atencion|abierto|cuándo)\b/i, flow: 'horarios' },
+    // Contacto genérico
     { pattern: /\b(contacto|asesor|hablar|ayuda|comunicar|correo|whatsapp)\b/i, flow: 'asesor' },
-    { pattern: /\b(web|página|sitio|internet|online)\b/i,              flow: 'web' },
-    { pattern: /\b(empleo|trabajo|vacante|hoja de vida|cargo)\b/i,    flow: 'empleo' },
-    { pattern: /\b(nosotros|empresa|historia|quién|misión|visión)\b/i, flow: 'sobre_nosotros' },
+    // Web
+    { pattern: /\b(web|página|sitio|internet|online)\b/i, flow: 'web' },
+    // Sobre nosotros
+    { pattern: /\b(nosotros|empresa|historia|quién|misión|visión|información)\b/i, flow: 'sobre_nosotros' },
+    // Saludos
     { pattern: /\b(hola|buenos días|buenas tardes|saludos|hey|hello)\b/i, flow: 'inicio' },
   ];
 
-  // ── Función principal al cargar el DOM ──
+  // ── Lógica del chat ──
   function onReady(){
     const chat   = document.getElementById('eiabot-chat');
     const minBtn = document.getElementById('eiabot-min');
@@ -145,20 +171,16 @@
     if (!chat || !minBtn) return;
 
     let started = false;
-    // Estado inicial: minimizado
     chat.classList.add('minimized');
     minBtn.style.display = 'flex';
     if (notif) notif.style.display = 'none';
 
-    // Notificación después de 4 segundos
     setTimeout(() => {
       if (!started && notif) notif.style.display = 'block';
     }, 4000);
 
-    // ── Helper para scroll ──
     function scroll(){ setTimeout(()=>msgs.scrollTop=msgs.scrollHeight,80); }
 
-    // ── Añadir mensaje del bot ──
     function addBot(text){
       const el = document.createElement('div');
       el.className = 'eiabot-bm';
@@ -167,7 +189,6 @@
       msgs.appendChild(el); scroll();
     }
 
-    // ── Añadir mensaje del usuario ──
     function addUser(text){
       const el = document.createElement('div');
       el.className = 'eiabot-um';
@@ -175,7 +196,6 @@
       msgs.appendChild(el); scroll();
     }
 
-    // ── Mostrar opciones clicables ──
     function addOpts(opts){
       const el = document.createElement('div');
       el.className = 'eiabot-opts';
@@ -198,7 +218,6 @@
       msgs.appendChild(el); scroll();
     }
 
-    // ── Indicador de "escribiendo..." ──
     function showTyping(cb){
       const el = document.createElement('div');
       el.className = 'eiabot-typing';
@@ -207,22 +226,21 @@
       setTimeout(() => { el.remove(); cb(); }, 900);
     }
 
-    // ── Navegar a un flujo ──
     function goFlow(key){
       const f = FLOWS[key] || FLOWS.default;
       if(f.type === 'form'){
-        showForm(f.area);
+        showForm(f.area, f.subject);
       } else {
         addBot(f.msg);
         setTimeout(() => addOpts(f.opts), 200);
       }
     }
 
-    // ── Formulario de contacto ──
-    function showForm(area){
+    // ── Formulario de contacto (con asunto predefinido) ──
+    function showForm(area, subject){
       const formEl = document.createElement('div');
       formEl.className = 'eiabot-form';
-      const defaultSubject = getDefaultSubject(area);
+      const defaultSubject = subject || getDefaultSubject(area);
       formEl.innerHTML = `
         <label for="eiabot-fname">Tu nombre *</label>
         <div class="input-icon"><i class="fas fa-user"></i><input type="text" id="eiabot-fname" placeholder="Ej. María Pérez" required></div>
@@ -242,13 +260,13 @@
         const name = document.getElementById('eiabot-fname').value.trim();
         if(!name){ alert('Por favor ingresa tu nombre.'); return; }
         const email = document.getElementById('eiabot-femail').value.trim();
-        const subject = document.getElementById('eiabot-fsubject').value.trim();
+        const subj = document.getElementById('eiabot-fsubject').value.trim();
         const msg = document.getElementById('eiabot-fmsg').value.trim();
         const btn = document.getElementById('eiabot-fsend');
         btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         try {
           const endpoint = FORMSPREE[area] || FORMSPREE.general;
-          const response = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre:name,email,asunto:subject,mensaje:msg,area,_subject:`Nueva consulta Kai: ${subject}`})});
+          const response = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre:name,email,asunto:subj,mensaje:msg,area,_subject:`Nueva consulta Kai: ${subj}`})});
           if(response.ok){ formEl.remove(); addBot('✅ ¡Mensaje enviado con éxito! Te responderemos pronto.'); }
           else throw new Error('Error en el envío');
         } catch(error){
@@ -262,10 +280,10 @@
         const name = document.getElementById('eiabot-fname').value.trim();
         if(!name){ alert('Por favor ingresa tu nombre.'); return; }
         const email = document.getElementById('eiabot-femail').value.trim();
-        const subject = document.getElementById('eiabot-fsubject').value.trim();
+        const subj = document.getElementById('eiabot-fsubject').value.trim();
         const msg = document.getElementById('eiabot-fmsg').value.trim();
         const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
-        const body = `Hola Kai, soy ${name}.${email ? ' Email: '+email+'.' : ''} Asunto: ${subject}.${msg ? ' Mensaje: '+msg : ''}`;
+        const body = `Hola Kai, soy ${name}.${email ? ' Email: '+email+'.' : ''} Asunto: ${subj}.${msg ? ' Mensaje: '+msg : ''}`;
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(body)}`, '_blank');
         formEl.remove(); addBot('📱 He abierto WhatsApp con tu consulta.');
         askAgain();
@@ -273,16 +291,19 @@
     }
 
     function getDefaultSubject(area){
-      const subjects = { comercial:'Consulta Comercial', gestionhumana:'Consulta Gestión Humana', hseq:'Consulta HSEQ', gerenciatecnica:'Consulta Técnica', general:'Consulta General' };
+      const subjects = {
+        comercial:'Consulta Comercial', gestionhumana:'Consulta Gestión Humana',
+        hseq:'Consulta HSEQ', gerenciatecnica:'Consulta Técnica',
+        juridica:'Consulta Jurídica', compras:'Consulta Compras/Contabilidad',
+        general:'Consulta General'
+      };
       return subjects[area] || 'Consulta';
     }
 
-    // ── Preguntar si necesita algo más ──
     function askAgain(){
       setTimeout(()=>{ addBot('¿Necesitas ayuda con algo más?'); setTimeout(()=>addOpts([{label:'✅ Sí, tengo otra consulta',next:'inicio'},{label:'👋 No, gracias',action:()=>{addBot('¡Fue un placer ayudarte! 😊');setTimeout(()=>minimize(),3000)}}]),300); },800);
     }
 
-    // ── Procesar entrada de texto ──
     function handleInput(){
       const v=inp.value.trim(); if(!v)return;
       inp.value=''; addUser(v);
@@ -297,7 +318,6 @@
       }
     }
 
-    // ── Minimizar / Expandir ──
     function minimize(){
       chat.classList.add('minimized');
       minBtn.style.display = 'flex';
@@ -314,13 +334,11 @@
       inp.focus();
     }
 
-    // ── Exponer API y eventos ──
     window.eiabot = { minimize, expand, handleInput };
     minBtn.addEventListener('click', expand);
     inp.addEventListener('keydown', e => { if(e.key === 'Enter') handleInput(); });
   }
 
-  // ── Arranque seguro ──
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', onReady);
   } else {
