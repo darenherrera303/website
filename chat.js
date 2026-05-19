@@ -1,10 +1,6 @@
 (function(){
-  /* =============================================
-     Kai · Asistente Virtual de EIATEC
-     ============================================= */
   const KAI_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
 
-  // Endpoints de Formspree por área (reemplaza con tus IDs reales)
   const FORMSPREE = {
     comercial:       'https://formspree.io/f/form2',
     gestionhumana:   'https://formspree.io/f/form2',
@@ -97,16 +93,48 @@
     },
   };
 
-  const chat   = document.getElementById('eiabot-chat');
-  const minBtn = document.getElementById('eiabot-min');
-  const msgs   = document.getElementById('eiabot-msgs');
-  const inp    = document.getElementById('eiabot-inp');
-  let started  = false;
-  let currentFlow = 'inicio';
+  // Referencias a elementos (se ejecuta cuando el DOM esté listo)
+  let chat, minBtn, notif, msgs, inp, started = false;
 
-  function scroll(){ setTimeout(()=>msgs.scrollTop=msgs.scrollHeight,80); }
+  function initElements(){
+    chat   = document.getElementById('eiabot-chat');
+    minBtn = document.getElementById('eiabot-min');
+    notif  = document.getElementById('eiabot-notif');
+    msgs   = document.getElementById('eiabot-msgs');
+    inp    = document.getElementById('eiabot-inp');
+    if (!chat || !minBtn) return false;
+    return true;
+  }
+
+  // Esperar a que el DOM esté completamente cargado
+  function onReady(){
+    if (!initElements()) return;
+
+    // Forzar estado minimizado al cargar (por si otro script lo abre)
+    chat.classList.add('minimized');
+    minBtn.style.display = 'flex';
+    if (notif) notif.style.display = 'none';
+
+    // Mostrar notificación después de 4 segundos
+    setTimeout(() => {
+      if (!started && notif) notif.style.display = 'block';
+    }, 4000);
+
+    // Evento de teclado
+    inp.addEventListener('keydown', e => { if(e.key === 'Enter') handleInput(); });
+  }
+
+  // Ejecutar cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onReady);
+  } else {
+    onReady();
+  }
+
+  function scroll(){ if(msgs) setTimeout(()=>msgs.scrollTop=msgs.scrollHeight,80); }
 
   function addBot(text){
+    if(!msgs) return;
     const el = document.createElement('div');
     el.className = 'eiabot-bm';
     const html = text.replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
@@ -115,6 +143,7 @@
   }
 
   function addUser(text){
+    if(!msgs) return;
     const el = document.createElement('div');
     el.className = 'eiabot-um';
     el.innerHTML = `<div class="eiabot-um-bub">${text}</div>`;
@@ -122,6 +151,7 @@
   }
 
   function addOpts(opts){
+    if(!msgs) return;
     const el = document.createElement('div');
     el.className = 'eiabot-opts';
     opts.forEach(o => {
@@ -144,11 +174,12 @@
   }
 
   function showTyping(cb){
+    if(!msgs) return;
     const el = document.createElement('div');
     el.className = 'eiabot-typing';
     el.innerHTML = `<div class="eiabot-bm-av"><img src="${KAI_AVATAR}" alt="Kai"></div><div class="eiabot-typing-bub"><div class="eiabot-td"></div><div class="eiabot-td"></div><div class="eiabot-td"></div></div>`;
     msgs.appendChild(el); scroll();
-    setTimeout(() => { el.remove(); cb(); }, 900);
+    setTimeout(() => { if(el) el.remove(); cb(); }, 900);
   }
 
   function goFlow(key){
@@ -160,185 +191,100 @@
       addBot(f.msg);
       setTimeout(() => addOpts(f.opts), 200);
     }
-    currentFlow = key;
   }
 
-  /* ── FORMULARIO MEJORADO CON ENVÍO DIRECTO ── */
   function showForm(area){
+    if(!msgs) return;
     const formEl = document.createElement('div');
     formEl.className = 'eiabot-form';
     const defaultSubject = getDefaultSubject(area);
     formEl.innerHTML = `
       <label for="eiabot-fname">Tu nombre *</label>
-      <div class="input-icon">
-        <i class="fas fa-user"></i>
-        <input type="text" id="eiabot-fname" placeholder="Ej. María Pérez" required>
-      </div>
+      <div class="input-icon"><i class="fas fa-user"></i><input type="text" id="eiabot-fname" placeholder="Ej. María Pérez" required></div>
       <label for="eiabot-femail">Correo electrónico</label>
-      <div class="input-icon">
-        <i class="fas fa-envelope"></i>
-        <input type="email" id="eiabot-femail" placeholder="maria@correo.com">
-      </div>
+      <div class="input-icon"><i class="fas fa-envelope"></i><input type="email" id="eiabot-femail" placeholder="maria@correo.com"></div>
       <label for="eiabot-fsubject">Asunto</label>
-      <div class="input-icon">
-        <i class="fas fa-tag"></i>
-        <input type="text" id="eiabot-fsubject" value="${defaultSubject}">
-      </div>
+      <div class="input-icon"><i class="fas fa-tag"></i><input type="text" id="eiabot-fsubject" value="${defaultSubject}"></div>
       <label for="eiabot-fmsg">Mensaje (opcional)</label>
-      <div class="input-icon">
-        <i class="fas fa-comment"></i>
-        <textarea id="eiabot-fmsg" placeholder="Cuéntanos tu consulta..."></textarea>
-      </div>
+      <div class="input-icon"><i class="fas fa-comment"></i><textarea id="eiabot-fmsg" placeholder="Cuéntanos tu consulta..."></textarea></div>
       <div class="btn-row">
         <button class="btn-email" id="eiabot-fsend"><i class="fas fa-paper-plane"></i> Enviar mensaje</button>
         <button class="btn-wa" id="eiabot-fwa"><i class="fab fa-whatsapp"></i> WhatsApp</button>
-      </div>
-    `;
-    msgs.appendChild(formEl);
-    scroll();
+      </div>`;
+    msgs.appendChild(formEl); scroll();
 
-    // Enviar por correo (Formspree)
     document.getElementById('eiabot-fsend').onclick = async () => {
-      const name    = document.getElementById('eiabot-fname').value.trim();
-      const email   = document.getElementById('eiabot-femail').value.trim();
+      const name = document.getElementById('eiabot-fname').value.trim();
+      if(!name){ alert('Por favor ingresa tu nombre.'); return; }
+      const email = document.getElementById('eiabot-femail').value.trim();
       const subject = document.getElementById('eiabot-fsubject').value.trim();
-      const msg     = document.getElementById('eiabot-fmsg').value.trim();
-
-      if(!name){
-        alert('Por favor ingresa tu nombre.');
-        return;
-      }
-
+      const msg = document.getElementById('eiabot-fmsg').value.trim();
       const btn = document.getElementById('eiabot-fsend');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
       try {
         const endpoint = FORMSPREE[area] || FORMSPREE.general;
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nombre: name,
-            email: email,
-            asunto: subject,
-            mensaje: msg,
-            area: area,
-            _subject: `Nueva consulta Kai: ${subject}`
-          })
-        });
-
-        if(response.ok){
-          formEl.remove();
-          addBot('✅ ¡Mensaje enviado con éxito! Te responderemos pronto.');
-        } else {
-          throw new Error('Error en el envío');
-        }
+        const response = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre:name,email,asunto:subject,mensaje:msg,area,_subject:`Nueva consulta Kai: ${subject}`})});
+        if(response.ok){ formEl.remove(); addBot('✅ ¡Mensaje enviado con éxito! Te responderemos pronto.'); }
+        else throw new Error('Error en el envío');
       } catch(error){
         addBot('❌ Hubo un problema al enviar. Por favor intenta de nuevo o usa WhatsApp.');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar mensaje';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar mensaje';
       }
-
       askAgain();
     };
 
-    // Enviar por WhatsApp (alternativa)
     document.getElementById('eiabot-fwa').onclick = () => {
-      const name    = document.getElementById('eiabot-fname').value.trim();
-      const email   = document.getElementById('eiabot-femail').value.trim();
+      const name = document.getElementById('eiabot-fname').value.trim();
+      if(!name){ alert('Por favor ingresa tu nombre.'); return; }
+      const email = document.getElementById('eiabot-femail').value.trim();
       const subject = document.getElementById('eiabot-fsubject').value.trim();
-      const msg     = document.getElementById('eiabot-fmsg').value.trim();
-
-      if(!name){
-        alert('Por favor ingresa tu nombre.');
-        return;
-      }
+      const msg = document.getElementById('eiabot-fmsg').value.trim();
       const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
       const body = `Hola Kai, soy ${name}.${email ? ' Email: '+email+'.' : ''} Asunto: ${subject}.${msg ? ' Mensaje: '+msg : ''}`;
-      const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
-      window.open(url, '_blank');
-      formEl.remove();
-      addBot('📱 He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(body)}`, '_blank');
+      formEl.remove(); addBot('📱 He abierto WhatsApp con tu consulta.');
       askAgain();
     };
   }
 
   function getDefaultSubject(area){
-    const subjects = {
-      comercial: 'Consulta Comercial',
-      gestionhumana: 'Consulta Gestión Humana',
-      hseq: 'Consulta HSEQ',
-      gerenciatecnica: 'Consulta Técnica',
-      general: 'Consulta General'
-    };
+    const subjects = { comercial:'Consulta Comercial', gestionhumana:'Consulta Gestión Humana', hseq:'Consulta HSEQ', gerenciatecnica:'Consulta Técnica', general:'Consulta General' };
     return subjects[area] || 'Consulta';
   }
 
-  /* ── PREGUNTA FINAL ── */
   function askAgain(){
-    setTimeout(() => {
-      addBot('¿Necesitas ayuda con algo más?');
-      setTimeout(() => {
-        addOpts([
-          {label:'✅ Sí, tengo otra consulta', next:'inicio'},
-          {label:'👋 No, gracias', action:() => {
-            addBot('¡Fue un placer ayudarte! Recuerda que puedes escribirme cuando quieras. 😊');
-            setTimeout(() => minimize(), 3000);
-          }}
-        ]);
-      }, 300);
-    }, 800);
+    setTimeout(()=>{ addBot('¿Necesitas ayuda con algo más?'); setTimeout(()=>addOpts([{label:'✅ Sí, tengo otra consulta',next:'inicio'},{label:'👋 No, gracias',action:()=>{addBot('¡Fue un placer ayudarte! 😊');setTimeout(()=>minimize(),3000)}}]),300); },800);
   }
 
-  /* ── ENTRADA DE TEXTO ── */
   function handleInput(){
-    const v = inp.value.trim();
-    if(!v) return;
-    inp.value = '';
-    addUser(v);
-    const lv = v.toLowerCase();
+    const v=inp.value.trim(); if(!v)return;
+    inp.value=''; addUser(v);
+    const lv=v.toLowerCase();
     if(/servicio|eia|impacto|ambiental/.test(lv)) showTyping(()=>goFlow('servicios'));
     else if(/proyecto|trabajo|referencia/.test(lv)) showTyping(()=>goFlow('proyectos'));
     else if(/horario|hora/.test(lv)) showTyping(()=>goFlow('horarios'));
     else if(/contacto|asesor|hablar/.test(lv)) showTyping(()=>goFlow('asesor'));
     else if(/web|pagina|sitio/.test(lv)) showTyping(()=>goFlow('web'));
-    else {
-      showTyping(()=>{
-        addBot('No entendí tu solicitud. ¿Te gustaría que te comunique con un asesor?');
-        setTimeout(()=>addOpts([
-          {label:'📩 Contactar asesor', next:'asesor'},
-          {label:'🏠 Menú principal', next:'inicio'},
-        ]), 200);
-      });
-    }
+    else showTyping(()=>{ addBot('No entendí tu solicitud. ¿Te comunico con un asesor?'); setTimeout(()=>addOpts([{label:'📩 Contactar asesor',next:'asesor'},{label:'🏠 Menú principal',next:'inicio'}]),200); });
   }
 
   function minimize(){
-    chat.classList.add('minimized');
-    minBtn.style.display = 'flex';
+    if(chat) chat.classList.add('minimized');
+    if(minBtn) minBtn.style.display = 'flex';
+    if(notif) notif.style.display = 'none';
   }
 
   function expand(){
-    chat.classList.remove('minimized');
-    minBtn.style.display = 'none';
+    if(chat) chat.classList.remove('minimized');
+    if(minBtn) minBtn.style.display = 'none';
+    if(notif) notif.style.display = 'none';
     if(!started){
       started = true;
       setTimeout(() => goFlow('inicio'), 400);
     }
-    inp.focus();
+    if(inp) inp.focus();
   }
 
-  if(!started){
-    started = true;
-    setTimeout(() => goFlow('inicio'), 500);
-  }
-
-  inp.addEventListener('keydown', e => { if(e.key === 'Enter') handleInput(); });
-
-  window.eiabot = {
-    minimize,
-    expand,
-    handleInput
-  };
+  // Exponer API global
+  window.eiabot = { minimize, expand, handleInput };
 })();
