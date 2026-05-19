@@ -1,8 +1,8 @@
 (function(){
   /* =============================================
-     Kay · Asistente Virtual de EIATEC
+     Kai · Asistente Virtual de EIATEC
      ============================================= */
-  const KAi_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
+  const KAI_AVATAR = "https://static.wixstatic.com/media/2801d6_c8449c3cafcf4a06941af5aa73607488~mv2.png";
 
   // Endpoints de Formspree por área (reemplaza con tus IDs reales)
   const FORMSPREE = {
@@ -38,7 +38,7 @@
 
   const FLOWS = {
     inicio: {
-      msg: '¡Hola! 👋 Soy <strong>Kai</strong>, tu asistente virtual de eiatec.<br>¿En qué puedo ayudarte hoy?',
+      msg: '¡Hola! 👋 Soy <strong>Kai</strong>, tu asistente virtual de EIATEC.<br>¿En qué puedo ayudarte hoy?',
       opts: [
         {label:'📋 Servicios', next:'servicios'},
         {label:'🗂️ Proyectos', next:'proyectos'},
@@ -50,7 +50,7 @@
     servicios: {
       msg:'Ofrecemos servicios en:<br>• Estudios de Impacto Ambiental (EIA)<br>• Consulta Previa<br>• Gestión Hídrica<br>• Flora, Fauna y Biodiversidad<br>• Energía Renovable<br>• Arqueología<br>• Sostenibilidad Empresarial<br>• Logística Ambiental<br>¿Deseas más detalle?',
       opts:[
-        {label:'🔗 Ver servicios', action:()=>open(CFG.pages.servicios,'_top')},
+        {label:'🔗 Ver servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
         {label:'📩 Consultar', next:'asesor'},
         {label:'🏠 Inicio', next:'inicio'},
       ]
@@ -58,7 +58,7 @@
     proyectos: {
       msg:'Hemos realizado más de 30 proyectos en Colombia.',
       opts:[
-        {label:'🔗 Ver proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
+        {label:'🔗 Ver proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
         {label:'🏠 Inicio', next:'inicio'},
       ]
     },
@@ -87,11 +87,11 @@
     web: {
       msg:'¿A qué sección deseas ir?',
       opts:[
-        {label:'⚙️ Servicios', action:()=>open(CFG.pages.servicios,'_top')},
-        {label:'📁 Proyectos', action:()=>open(CFG.pages.proyectos,'_top')},
-        {label:'🏢 Nosotros',  action:()=>open(CFG.pages.nosotros,'_top')},
-        {label:'✉️ Contacto',  action:()=>open(CFG.pages.contacto,'_top')},
-        {label:'📰 Blog',      action:()=>open(CFG.pages.blog,'_top')},
+        {label:'⚙️ Servicios', action:()=>window.open(CFG.pages.servicios,'_top')},
+        {label:'📁 Proyectos', action:()=>window.open(CFG.pages.proyectos,'_top')},
+        {label:'🏢 Nosotros',  action:()=>window.open(CFG.pages.nosotros,'_top')},
+        {label:'✉️ Contacto',  action:()=>window.open(CFG.pages.contacto,'_top')},
+        {label:'📰 Blog',      action:()=>window.open(CFG.pages.blog,'_top')},
         {label:'🏠 Inicio',    next:'inicio'},
       ]
     },
@@ -110,7 +110,7 @@
     const el = document.createElement('div');
     el.className = 'eiabot-bm';
     const html = text.replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
-    el.innerHTML = `<div class="eiabot-bm-av"><img src="${KAY_AVATAR}" alt="Kay"></div><div class="eiabot-bm-bub">${html}</div>`;
+    el.innerHTML = `<div class="eiabot-bm-av"><img src="${KAI_AVATAR}" alt="Kai"></div><div class="eiabot-bm-bub">${html}</div>`;
     msgs.appendChild(el); scroll();
   }
 
@@ -146,7 +146,7 @@
   function showTyping(cb){
     const el = document.createElement('div');
     el.className = 'eiabot-typing';
-    el.innerHTML = `<div class="eiabot-bm-av"><img src="${KAY_AVATAR}" alt="Kay"></div><div class="eiabot-typing-bub"><div class="eiabot-td"></div><div class="eiabot-td"></div><div class="eiabot-td"></div></div>`;
+    el.innerHTML = `<div class="eiabot-bm-av"><img src="${KAI_AVATAR}" alt="Kai"></div><div class="eiabot-typing-bub"><div class="eiabot-td"></div><div class="eiabot-td"></div><div class="eiabot-td"></div></div>`;
     msgs.appendChild(el); scroll();
     setTimeout(() => { el.remove(); cb(); }, 900);
   }
@@ -224,7 +224,7 @@
             asunto: subject,
             mensaje: msg,
             area: area,
-            _subject: `Nueva consulta Kay: ${subject}`
+            _subject: `Nueva consulta Kai: ${subject}`
           })
         });
 
@@ -255,9 +255,9 @@
         return;
       }
       const phone = CFG.whatsapp[area] || CFG.whatsapp.general;
-      const body = `Hola Kay, soy ${name}.${email ? ' Email: '+email+'.' : ''} Asunto: ${subject}.${msg ? ' Mensaje: '+msg : ''}`;
+      const body = `Hola Kai, soy ${name}.${email ? ' Email: '+email+'.' : ''} Asunto: ${subject}.${msg ? ' Mensaje: '+msg : ''}`;
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(body)}`;
-      open(url, '_blank');
+      window.open(url, '_blank');
       formEl.remove();
       addBot('📱 He abierto WhatsApp con tu consulta. Si no se abrió, puedes intentar de nuevo.');
       askAgain();
